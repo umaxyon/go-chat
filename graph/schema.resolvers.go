@@ -6,11 +6,12 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/segmentio/ksuid"
 	"go-chat/graph/generated"
 	"go-chat/graph/model"
 	"log"
 	"time"
+
+	"github.com/segmentio/ksuid"
 )
 
 func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
@@ -35,7 +36,15 @@ func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) 
 	return r.messages, nil
 }
 
-func (r *subscriptionResolver) MessagePosted(ctx context.Context, user string) (<-chan *model.Message, error) {
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	var users []*model.User
+	for user := range r.subscribers {
+		users = append(users, &model.User{User: user})
+	}
+	return users, nil
+}
+
+func (r *subscriptionResolver) SubscribeMessage(ctx context.Context, user string) (<-chan *model.Message, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
