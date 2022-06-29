@@ -18,7 +18,7 @@ const Auth: React.FC<AuthProps> = ({ children }) => {
                 const loginUser = sessionStorage.getItem(KEY_USER)
                 if (loginUser) {
                     setUser(loginUser)
-                    sessionStorage.setItem(KEY_LOGIN, 'login')
+                    sessionStorage.setItem(KEY_LOGIN, loginUser)
                 } else {
                     router.replace("/login")
                 }

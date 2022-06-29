@@ -1,8 +1,11 @@
+import { ApolloProvider } from '@apollo/client'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Auth, { KEY_LOGIN } from '../components/auth'
+import { client } from '../components/client'
+import CommentFeedWithData from '../components/CommentFeed'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
@@ -21,6 +24,7 @@ const Home: NextPage = () => {
   }
 
   return (
+    <ApolloProvider client={client}>
     <Auth>
       {!login ? <></> : (
       <div className={styles.container}>
@@ -31,6 +35,7 @@ const Home: NextPage = () => {
         </Head>
 
         <main className="container mx-auto p-4">
+          <CommentFeedWithData user={login} />
           <div className="flex justify-center gap-2">
             <input type="text" placeholder='入力してください'
               className="
@@ -55,6 +60,7 @@ const Home: NextPage = () => {
       </div>
     )}
     </Auth>
+    </ApolloProvider>
   )
 }
 
