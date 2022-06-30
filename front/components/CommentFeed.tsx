@@ -1,4 +1,5 @@
 import { gql, useQuery, useSubscription } from "@apollo/client"
+import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
 const MESSAGE_QUERY = gql`
@@ -41,9 +42,9 @@ const CommentFeedWithData: React.FC<CommentFeedWithDataProps> = ({ user }) => {
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.subscribeMessage;
-                const feeds = prev.comments ? [newFeedItem, ...prev.feeds] : [newFeedItem]
-                setComments(feeds)
-                return Object.assign({}, prev, { feeds })
+                const messages = prev.messages ? [newFeedItem, ...prev.messages] : [newFeedItem]
+                setComments(messages)
+                return Object.assign({}, prev, { messages })
             }
         })
     }

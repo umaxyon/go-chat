@@ -1,4 +1,4 @@
-import { split, HttpLink, ApolloClient, InMemoryCache } from '@apollo/client'
+import { split, HttpLink, ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
@@ -17,3 +17,14 @@ const splitLink = split(({ query }) => {
 }, wsLink, httpLink)
 
 export const client = new ApolloClient({ link: splitLink, cache: new InMemoryCache() })
+
+export const ADD_COMMENT = gql`
+mutation($user: String!, $text: String!) {
+  postMessage(user: $user, text: $text) {
+    id
+    user
+    text
+    createdAt
+  }
+}
+`
