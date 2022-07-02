@@ -1,39 +1,27 @@
-import { gql, useQuery, useSubscription } from "@apollo/client"
-import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useQuery } from "@apollo/client"
+import { useEffect } from "react"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { commentsState, usersState } from "../state/atoms"
+import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 
-const MESSAGE_QUERY = gql`
-query GetMessages {
-  messages {
-    id
-    user
-    text
-    createdAt
-  }
-  users {
-    user
-  }
-}
-`
-const SUBSCRIPTION = gql`
-subscription subscribeMessage($user: String!) {
-  subscribeMessage(user: $user) {
-    id
-    user
-    text
-    createdAt
-  }
-}
-`
 
 type CommentFeedWithDataProps = {
     user: string
 }
 
 const CommentFeedWithData: React.FC<CommentFeedWithDataProps> = ({ user }) => {
-    const [ comments, setComments ] = useState<any>([])
+    const [ comments, setComments ] = useRecoilState<any>(commentsState)
+    const [ users, setUsers ] = useRecoilState<any>(usersState)
+
 
     const result = useQuery(MESSAGE_QUERY)
+
+    useEffect(() => {
+        if (result && result.data) {
+            setComments(result.data.messages)
+            setUsers(result.data.users)
+        }
+    }, [result, setComments, setUsers])
 
     const subscribeToNewComments = () => {
         result.subscribeToMore({
@@ -41,24 +29,30 @@ const CommentFeedWithData: React.FC<CommentFeedWithDataProps> = ({ user }) => {
             variables: { user },
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
-                const newFeedItem = subscriptionData.data.subscribeMessage;
-                const messages = prev.messages ? [newFeedItem, ...prev.messages] : [newFeedItem]
-                setComments(messages)
-                return Object.assign({}, prev, { messages })
+                const resp = subscriptionData.data.subscribe;
+                if (resp.message) {
+                    const messages = prev.messages ? [resp.message, ...prev.messages] : [resp.message]
+                    setComments(messages)
+                    return Object.assign({}, prev, { messages })
+                }
+                if (resp.user) {
+                    const users = prev.users ? [resp.user, ...prev.users] : [resp.user]
+                    setUsers(users)
+                    return Object.assign({}, prev, { users })
+                }
             }
         })
     }
 
-    return <CommentFeed subscribeToNewComments={subscribeToNewComments} comments={comments} />
+    return <CommentFeed subscribeToNewComments={subscribeToNewComments} />
 }
 
 type CommentFeedProps = {
     subscribeToNewComments: any
-    comments: any
 }
 
-const CommentFeed: React.FC<CommentFeedProps> = ({ subscribeToNewComments, comments }) => {
-    const { data, loading } = useSubscription(SUBSCRIPTION)
+const CommentFeed: React.FC<CommentFeedProps> = ({ subscribeToNewComments }) => {
+    const comments: any = useRecoilValue(commentsState)
     useEffect(()=> {
         subscribeToNewComments()
     },[])

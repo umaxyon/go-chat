@@ -28,3 +28,32 @@ mutation($user: String!, $text: String!) {
   }
 }
 `
+
+export const MESSAGE_QUERY = gql`
+query GetMessages {
+  messages {
+    id
+    user
+    text
+    createdAt
+  }
+  users {
+    user
+  }
+}
+`
+export const SUBSCRIPTION = gql`
+subscription subscribeMessage($user: String!) {
+  subscribe(user: $user) {
+    message {
+        id
+        user
+        text
+        createdAt
+    }
+    user {
+        user
+    }
+  }
+}
+`
