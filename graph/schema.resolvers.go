@@ -9,6 +9,7 @@ import (
 	"go-chat/graph/generated"
 	"go-chat/graph/model"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/segmentio/ksuid"
@@ -17,7 +18,7 @@ import (
 func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
 	message := &model.Message{
 		ID:        ksuid.New().String(),
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: time.Now(),
 		User:      user,
 		Text:      text,
 	}
@@ -25,14 +26,21 @@ func (r *mutationResolver) PostMessage(ctx context.Context, user string, text st
 	r.mutex.Lock()
 	r.messages = append(r.messages, message)
 	for _, ch := range r.subscribers {
-		ch <- message
+		ch <- &model.SubscriptionResponse{Message: message}
 	}
 	r.mutex.Unlock()
 
 	return message, nil
 }
 
+func (r *mutationResolver) JoinUser(ctx context.Context, user string) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
+	sort.SliceStable(r.messages, func(i, j int) bool {
+		return r.messages[i].CreatedAt.Unix() > r.messages[j].CreatedAt.Unix()
+	})
 	return r.messages, nil
 }
 
@@ -44,7 +52,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	return users, nil
 }
 
-func (r *subscriptionResolver) SubscribeMessage(ctx context.Context, user string) (<-chan *model.Message, error) {
+func (r *subscriptionResolver) Subscribe(ctx context.Context, user string) (<-chan *model.SubscriptionResponse, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -54,9 +62,13 @@ func (r *subscriptionResolver) SubscribeMessage(ctx context.Context, user string
 		return nil, err
 	}
 
-	ch := make(chan *model.Message, 1)
+	ch := make(chan *model.SubscriptionResponse, 1)
 	r.subscribers[user] = ch
 	log.Printf("`%s` has been subscribed!", user)
+
+	for _, ch := range r.subscribers {
+		ch <- &model.SubscriptionResponse{User: &model.User{User: user}}
+	}
 
 	go func() {
 		<-ctx.Done()

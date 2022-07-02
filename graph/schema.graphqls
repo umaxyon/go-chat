@@ -11,8 +11,14 @@ type User {
   user: String!
 }
 
+type SubscriptionResponse {
+  message: Message,
+  user: User,
+}
+
 type Mutation {
-  postMessage(user: String!, text: String!): Message
+  postMessage(user: String!, text: String!): Message!
+  joinUser(user: String!): User!
 }
 
 type Query {
@@ -21,5 +27,5 @@ type Query {
 }
 
 type Subscription {
-  subscribeMessage(user: String!): Message
+  subscribe(user: String!): SubscriptionResponse!
 }

@@ -13,6 +13,11 @@ type Message struct {
 	Text      string    `json:"text"`
 }
 
+type SubscriptionResponse struct {
+	Message *Message `json:"message"`
+	User    *User    `json:"user"`
+}
+
 type User struct {
 	User string `json:"user"`
 }
