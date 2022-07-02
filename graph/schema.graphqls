@@ -18,12 +18,11 @@ type SubscriptionResponse {
 
 type Mutation {
   postMessage(user: String!, text: String!): Message!
-  joinUser(user: String!): User!
 }
 
 type Query {
   messages: [Message!]!
-  users: [User!]!
+  members: [User!]!
 }
 
 type Subscription {

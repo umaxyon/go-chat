@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Auth, { KEY_LOGIN } from '../components/auth'
 import { client } from '../components/client'
-import CommentFeedWithData from '../components/CommentFeed'
+import CommentFeed from '../components/CommentFeed'
 import CommentSenderPanel from '../components/CommentSenderPanel'
 import styles from '../styles/Home.module.css'
 
@@ -37,7 +37,7 @@ const Home: NextPage = () => {
         </Head>
 
         <main className="container mx-auto p-4">
-          <CommentFeedWithData user={login} />
+          <CommentFeed user={login} />
           <CommentSenderPanel user={login} />
         </main>
 

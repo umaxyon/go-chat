@@ -1,29 +1,27 @@
 import { useQuery } from "@apollo/client"
 import { useEffect } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { commentsState, usersState } from "../state/atoms"
+import { useRecoilState } from "recoil"
+import { commentsState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 
 
-type CommentFeedWithDataProps = {
+type CommentFeedProps = {
     user: string
 }
 
-const CommentFeedWithData: React.FC<CommentFeedWithDataProps> = ({ user }) => {
+const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     const [ comments, setComments ] = useRecoilState<any>(commentsState)
-    const [ users, setUsers ] = useRecoilState<any>(usersState)
-
-
+    const [ _, setMembers ] = useRecoilState<any>(membersState)
     const result = useQuery(MESSAGE_QUERY)
 
     useEffect(() => {
         if (result && result.data) {
             setComments(result.data.messages)
-            setUsers(result.data.users)
+            setMembers(result.data.members)
         }
-    }, [result, setComments, setUsers])
+    }, [result, setComments, setMembers])
 
-    const subscribeToNewComments = () => {
+    useEffect(()=> {
         result.subscribeToMore({
             document: SUBSCRIPTION,
             variables: { user },
@@ -36,25 +34,12 @@ const CommentFeedWithData: React.FC<CommentFeedWithDataProps> = ({ user }) => {
                     return Object.assign({}, prev, { messages })
                 }
                 if (resp.user) {
-                    const users = prev.users ? [resp.user, ...prev.users] : [resp.user]
-                    setUsers(users)
-                    return Object.assign({}, prev, { users })
+                    const members = prev.members ? [resp.user, ...prev.members] : [resp.user]
+                    setMembers(members)
+                    return Object.assign({}, prev, { members })
                 }
             }
         })
-    }
-
-    return <CommentFeed subscribeToNewComments={subscribeToNewComments} />
-}
-
-type CommentFeedProps = {
-    subscribeToNewComments: any
-}
-
-const CommentFeed: React.FC<CommentFeedProps> = ({ subscribeToNewComments }) => {
-    const comments: any = useRecoilValue(commentsState)
-    useEffect(()=> {
-        subscribeToNewComments()
     },[])
 
     const feed = !comments ? <></> : comments.map(c => {
@@ -67,4 +52,4 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ subscribeToNewComments }) => 
         <div>{feed}</div>
     )
 }
-export default CommentFeedWithData
+export default CommentFeed

@@ -37,7 +37,7 @@ query GetMessages {
     text
     createdAt
   }
-  users {
+  members {
     user
   }
 }

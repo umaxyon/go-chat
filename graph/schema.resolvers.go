@@ -33,10 +33,6 @@ func (r *mutationResolver) PostMessage(ctx context.Context, user string, text st
 	return message, nil
 }
 
-func (r *mutationResolver) JoinUser(ctx context.Context, user string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
 	sort.SliceStable(r.messages, func(i, j int) bool {
 		return r.messages[i].CreatedAt.Unix() > r.messages[j].CreatedAt.Unix()
@@ -44,7 +40,7 @@ func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) 
 	return r.messages, nil
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+func (r *queryResolver) Members(ctx context.Context) ([]*model.User, error) {
 	var users []*model.User
 	for user := range r.subscribers {
 		users = append(users, &model.User{User: user})
