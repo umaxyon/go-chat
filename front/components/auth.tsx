@@ -1,4 +1,4 @@
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 export const KEY_USER = "KEY_USER"
