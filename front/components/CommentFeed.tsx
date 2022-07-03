@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client"
 import { useEffect } from "react"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useSetRecoilState } from "recoil"
 import { commentsState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 
@@ -10,8 +10,8 @@ type CommentFeedProps = {
 }
 
 const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
-    const [ comments, setComments ] = useRecoilState<any>(commentsState)
-    const [ _, setMembers ] = useRecoilState<any>(membersState)
+    const [ comments, setComments ] = useRecoilState(commentsState)
+    const setMembers = useSetRecoilState(membersState)
     const result = useQuery(MESSAGE_QUERY)
 
     useEffect(() => {
@@ -49,7 +49,9 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     })
 
     return (
-        <div>{feed}</div>
+        <div className="flex border border-gray-300 min-w-3/4 h-full rounded-tr">
+            {feed}
+        </div>
     )
 }
 export default CommentFeed
