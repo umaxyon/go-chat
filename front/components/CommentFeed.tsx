@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
 import { commentsState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
+import CommentPanel from "./CommentPanel"
 
 
 type CommentFeedProps = {
@@ -17,7 +18,9 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     useEffect(() => {
         if (result && result.data) {
             setComments(result.data.messages)
-            setMembers(result.data.members)
+            if (result.data.members.length > 0) {
+                setMembers(result.data.members)
+            }
         }
     }, [result, setComments, setMembers])
 
@@ -29,7 +32,7 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                 if (!subscriptionData.data) return prev;
                 const resp = subscriptionData.data.subscribe;
                 if (resp.message) {
-                    const messages = prev.messages ? [resp.message, ...prev.messages] : [resp.message]
+                    const messages = prev.messages ? [...prev.messages, resp.message] : [resp.message]
                     setComments(messages)
                     return Object.assign({}, prev, { messages })
                 }
@@ -40,16 +43,15 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                 }
             }
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     const feed = !comments ? <></> : comments.map(c => {
-        return (
-            <div key={c.id}>{c.text}</div>
-        )
+        return <CommentPanel key={c.id} comment={c} />
     })
 
     return (
-        <div className="flex border border-gray-300 min-w-3/4 h-full rounded-tr">
+        <div className="flex flex-col justify-end gap-1 border border-gray-300 min-w-3/4 h-full rounded-tr p-1">
             {feed}
         </div>
     )

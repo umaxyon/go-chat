@@ -4,7 +4,7 @@ type Member = {
     user: string
 }
 
-type Comment = {
+export type Comment = {
     id: string,
     user: string,
     text: string,
