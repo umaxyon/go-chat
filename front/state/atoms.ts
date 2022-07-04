@@ -1,3 +1,4 @@
+import { RefObject } from "react"
 import { atom } from "recoil"
 
 type Member = {
@@ -19,4 +20,9 @@ export const membersState = atom<Member[]>({
 export const commentsState = atom<Comment[]>({
     key: "comments",
     default: [],
+})
+
+export const scrollRefState = atom<RefObject<HTMLDivElement>|null>({
+    key: "scrollRef",
+    default: null,
 })

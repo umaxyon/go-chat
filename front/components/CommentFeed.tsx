@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, membersState } from "../state/atoms"
+import { commentsState, membersState, scrollRefState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 import CommentPanel from "./CommentPanel"
 
@@ -13,6 +13,8 @@ type CommentFeedProps = {
 const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     const [ comments, setComments ] = useRecoilState(commentsState)
     const setMembers = useSetRecoilState(membersState)
+    const setScrollRef = useSetRecoilState(scrollRefState)
+    const scrollBottomRef = useRef<HTMLDivElement>(null);
     const result = useQuery(MESSAGE_QUERY)
 
     useEffect(() => {
@@ -22,7 +24,8 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                 setMembers(result.data.members)
             }
         }
-    }, [result, setComments, setMembers])
+        setScrollRef(scrollBottomRef)
+    }, [result, setComments, setMembers, scrollBottomRef, setScrollRef])
 
     useEffect(()=> {
         result.subscribeToMore({
@@ -51,8 +54,11 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     })
 
     return (
-        <div className="flex flex-col justify-end gap-1 border border-gray-300 min-w-3/4 h-full rounded-tr p-1">
-            {feed}
+        <div className="
+            border border-gray-300 min-w-3/4 h-full rounded-tr p-1
+            overflow-y-scroll overflow-x-hidden scrollDiv">
+            <div className="flex flex-col justify-end gap-1">{feed}</div>
+            <div ref={scrollBottomRef} />
         </div>
     )
 }
