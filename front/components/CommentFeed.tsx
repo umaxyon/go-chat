@@ -13,7 +13,6 @@ type CommentFeedProps = {
 const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     const [ comments, setComments ] = useRecoilState(commentsState)
     const setMembers = useSetRecoilState(membersState)
-    const setScrollRef = useSetRecoilState(scrollRefState)
     const scrollBottomRef = useRef<HTMLDivElement>(null);
     const result = useQuery(MESSAGE_QUERY)
 
@@ -23,9 +22,9 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
             if (result.data.members.length > 0) {
                 setMembers(result.data.members)
             }
+            scrollBottomRef!.current!.scrollIntoView({ block: 'end' })
         }
-        setScrollRef(scrollBottomRef)
-    }, [result, setComments, setMembers, scrollBottomRef, setScrollRef])
+    }, [result, setComments, setMembers, scrollBottomRef])
 
     useEffect(()=> {
         result.subscribeToMore({

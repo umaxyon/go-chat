@@ -1,7 +1,5 @@
 import { useMutation } from "@apollo/client"
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useState } from "react"
-import { useRecoilValue } from "recoil"
-import { scrollRefState } from "../state/atoms"
 import { ADD_COMMENT } from "./client"
 
 type CommentSenderPanelProps = {
@@ -11,7 +9,6 @@ type CommentSenderPanelProps = {
 const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
     const [ addComment, { error } ] = useMutation(ADD_COMMENT)
     const [ comment, setComment ] = useState<string>("")
-    const scrollRef = useRecoilValue(scrollRefState)
 
     const onChangeComment: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         setComment(e.target.value)
@@ -20,9 +17,8 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
     const onClickSubmit = useCallback(async () => {
         if (comment) {
             await addComment({ variables: { user, text: comment }})
-            scrollRef!.current!.scrollIntoView({ block: 'end' })
         }
-    }, [comment, user, addComment, scrollRef])
+    }, [comment, user, addComment])
 
     const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {
