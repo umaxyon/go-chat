@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client"
 import { useEffect, useRef } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, membersState, scrollRefState } from "../state/atoms"
+import { commentsState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 import CommentPanel from "./CommentPanel"
 

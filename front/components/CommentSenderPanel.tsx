@@ -17,13 +17,13 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
     const onClickSubmit = useCallback(async () => {
         if (comment) {
             await addComment({ variables: { user, text: comment }})
+            setComment("")
         }
     }, [comment, user, addComment])
 
     const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {
             await onClickSubmit()
-            setComment("")
         }
     }, [onClickSubmit])
 
