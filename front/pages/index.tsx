@@ -2,26 +2,22 @@ import { ApolloProvider } from '@apollo/client'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import Auth, { KEY_LOGIN } from '../components/auth'
+import { useRecoilValue, useResetRecoilState } from 'recoil'
+import Auth from '../components/auth'
 import { client } from '../components/client'
 import CommentFeed from '../components/CommentFeed'
 import CommentSenderPanel from '../components/CommentSenderPanel'
 import MembersPanel from '../components/MembersPanel'
+import { loginState } from '../state/atoms'
 
 const Home: NextPage = () => {
   const router = useRouter()
-  const [ login, setLogin ] = useState<string>("")
+  const login = useRecoilValue(loginState)
+  const logout = useResetRecoilState(loginState)
 
-  useEffect(() => {
-    const login = sessionStorage.getItem(KEY_LOGIN)
-    if (login) {
-      setLogin(login)
-    }
-  }, [])
-
-  const logout = () => {
-    sessionStorage.clear()
+  const onClickLogout = () => {
+    logout()
+    if (login.disconnect) login.disconnect()
     router.reload()
   }
 
@@ -41,8 +37,8 @@ const Home: NextPage = () => {
             <div className="flex flex-col border border-gray-300 w-36 h-full rounded-l">
               <MembersPanel />
               <div className="flex align-middle flex-col w-full bg-yellow-100 pb-3 border-t border-gray-300">
-                <p className="p-2"><b>{login}</b><br/><small>で参加中</small></p>
-                <button type="button" onClick={logout}
+                <p className="p-2"><b>{login.user}</b><br/><small>で参加中</small></p>
+                <button type="button" onClick={onClickLogout}
                   className="
                     inline-block px-6 py-2.5 bg-yellow-500 text-white font-medium text-xs leading-tight uppercase
                     rounded shadow-md hover:bg-yellow-600 hover:shadow-lg focus:bg-yellow-600 focus:shadow-lg focus:outline-none 
@@ -50,8 +46,8 @@ const Home: NextPage = () => {
               </div>
             </div>
             <div className="flex flex-col gap-2 w-full h-full my-auto">
-              <CommentFeed user={login} />
-              <CommentSenderPanel user={login} />
+              <CommentFeed user={login.user} />
+              <CommentSenderPanel user={login.user} />
             </div>
           </div>
         </main>

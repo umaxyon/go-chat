@@ -1,16 +1,18 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useRef } from "react";
-import { KEY_USER } from "../components/auth";
+import { useSetRecoilState } from "recoil";
+import { loginState } from "../state/atoms";
 
 const Login: NextPage = () => {
     const router = useRouter()
     const nameInput = useRef<HTMLInputElement>(null)
+    const setLogin = useSetRecoilState(loginState)
 
     const onClickSignIn = () => {
-        const name = nameInput.current!.value
-        if (name) {
-            sessionStorage.setItem(KEY_USER, name)
+        const user = nameInput.current!.value
+        if (user) {
+            setLogin({ user })
             router.replace("/")
         }
     }

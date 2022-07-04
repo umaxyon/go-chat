@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../state/atoms";
 
-export const KEY_USER = "KEY_USER"
-export const KEY_LOGIN = "KEY_LOGIN"
 
 type AuthProps = {
     children: React.ReactNode
@@ -10,20 +10,15 @@ type AuthProps = {
 
 const Auth: React.FC<AuthProps> = ({ children }) => {
     const router = useRouter()
-    const [user, setUser] = useState<string | null>()
+    const user = useRecoilValue(loginState)
 
     useEffect(() => {
         if (router.isReady) {
             if (!user) {
-                const loginUser = sessionStorage.getItem(KEY_USER)
-                if (loginUser) {
-                    setUser(loginUser)
-                    sessionStorage.setItem(KEY_LOGIN, loginUser)
-                } else {
-                    router.replace("/login")
-                }
+                router.replace("/login")
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return <>{children}</>

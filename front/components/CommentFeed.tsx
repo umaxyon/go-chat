@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client"
 import { useEffect, useRef } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, membersState } from "../state/atoms"
+import { commentsState, loginState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "./client"
 import CommentPanel from "./CommentPanel"
 
@@ -12,6 +12,7 @@ type CommentFeedProps = {
 
 const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     const [ comments, setComments ] = useRecoilState(commentsState)
+    const [ login, setLogin ] = useRecoilState(loginState)
     const setMembers = useSetRecoilState(membersState)
     const scrollBottomRef = useRef<HTMLDivElement>(null);
     const result = useQuery(MESSAGE_QUERY)
@@ -27,7 +28,7 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     }, [result, setComments, setMembers, scrollBottomRef])
 
     useEffect(()=> {
-        result.subscribeToMore({
+        const disconnect = result.subscribeToMore({
             document: SUBSCRIPTION,
             variables: { user },
             updateQuery: (prev, { subscriptionData }) => {
@@ -45,6 +46,7 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                 }
             }
         })
+        setLogin({ ...login, disconnect })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
