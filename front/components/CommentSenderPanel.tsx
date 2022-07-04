@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client"
-import { ChangeEventHandler, useState } from "react"
+import { ChangeEventHandler, KeyboardEventHandler, useCallback, useState } from "react"
 import { ADD_COMMENT } from "./client"
 
 type CommentSenderPanelProps = {
@@ -10,19 +10,28 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
     const [ addComment, { error } ] = useMutation(ADD_COMMENT)
     const [ comment, setComment ] = useState<string>("")
 
-    const onChangeComment: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const onChangeComment: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         setComment(e.target.value)
-    }
+    }, [])
 
-    const onClickSubmit = async () => {
-        await addComment({ variables: { user, text: comment }})
-    }
+    const onClickSubmit = useCallback(async () => {
+        if (comment) {
+            await addComment({ variables: { user, text: comment }})
+        }
+    }, [comment, user, addComment])
+
+    const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
+        if (e.key === 'Enter') {
+            await onClickSubmit()
+            setComment("")
+        }
+    }, [onClickSubmit])
 
     return (
         <>
         { error ? <span>{error.message}</span>: null }
         <div className="flex justify-center gap-2">
-            <input type="text" placeholder='入力してください' onChange={onChangeComment}
+            <input type="text" placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment}
             className="
                 block w-full text-base font-normal text-gray-700 bg-white bg-clip-padding
                 border border-solid border-gray-300 rounded py-1.5 px-3 transition ease-in-out m-0
