@@ -1,15 +1,33 @@
 import React from 'react'
 import { Comment } from '../state/atoms'
 
+const pad = (n:number) => ('00' + n).slice(-2)
+
+const formatYMDHms = (date: Date) => {
+    
+    return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
 
 type CommentPanelProps = {
     comment: Comment
 }
 
 const CommentPanel: React.FC<CommentPanelProps> = ({ comment }) => {
+    const createdAt = formatYMDHms(new Date(comment.createdAt))
+
     return (
-        <div className="w-full p-2 bg-green-100 text-sm">
-            {comment.text}
+        <div className="w-full pt-2 text-xs">
+            <div className="flex flex-row w-full justify-between pb-1">
+                <div className="inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-gray-200 text-gray-700 rounded-full">
+                    {comment.user}
+                </div>
+                <div className="text-slate-400">
+                    {createdAt}
+                </div>
+            </div>
+            <div className="ml-7 p-2 bg-green-200 text-sm balloon rounded-lg">
+                {comment.text}
+            </div>
         </div>
     )
 }

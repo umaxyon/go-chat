@@ -28,4 +28,22 @@ html, body, div#__next {
     border-radius: 5px;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
   }
+
+  .balloon{
+    position: relative;
+  }
+
+  .balloon::before{
+    content: '';
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    left: -16px;
+    top: 7px;
+    transform: rotate(20deg);
+    border-right: 20px solid rgb(187 247 208 / var(--tw-bg-opacity));
+    border-top: 2px solid transparent;
+    border-bottom: 15px solid transparent;
+  }
 }
