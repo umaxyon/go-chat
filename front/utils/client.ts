@@ -1,10 +1,11 @@
+import fetch from 'cross-fetch';
 import { split, HttpLink, ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
 
 const httpLink = new HttpLink({
-    uri: 'http://localhost:8080/query'
+    uri: 'http://localhost:8080/query', fetch
 })
 
 const wsLink = typeof window !== "undefined" ? new GraphQLWsLink(createClient({

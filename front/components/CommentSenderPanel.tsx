@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client"
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useState } from "react"
-import { ADD_COMMENT } from "./client"
+import { ADD_COMMENT } from "../utils/client"
 
 type CommentSenderPanelProps = {
     user: string
