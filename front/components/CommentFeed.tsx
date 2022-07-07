@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client"
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
 import { commentsState, loginState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "../utils/client"
@@ -17,15 +17,19 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     const scrollBottomRef = useRef<HTMLDivElement>(null);
     const result = useQuery(MESSAGE_QUERY)
 
+    const scrollEnd = useCallback(() => {
+        scrollBottomRef!.current!.scrollIntoView({ block: 'end' })
+    }, [scrollBottomRef])
+
     useEffect(() => {
         if (result && result.data) {
             setComments(result.data.messages)
             if (result.data.members.length > 0) {
                 setMembers(result.data.members)
             }
-            scrollBottomRef!.current!.scrollIntoView({ block: 'end' })
+            scrollEnd()
         }
-    }, [result, setComments, setMembers, scrollBottomRef])
+    }, [result, setComments, setMembers, scrollEnd])
 
     useEffect(()=> {
         const disconnect = result.subscribeToMore({
@@ -41,7 +45,9 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                 }
                 if (resp.user) {
                     const members = prev.members ? [resp.user, ...prev.members] : [resp.user]
+                    if (!members.some(m => m.user === login.user)) members.push(login)
                     setMembers(members)
+                    setTimeout(scrollEnd, 0)
                     return Object.assign({}, prev, { members })
                 }
             }
