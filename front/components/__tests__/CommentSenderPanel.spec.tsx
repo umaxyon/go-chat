@@ -5,48 +5,67 @@ import { cleanup, screen, fireEvent, render } from '@testing-library/react';
 import React from "react";
 import renderer from "react-test-renderer"
 
+
 afterEach(() => cleanup())
+
+const TEST_TEXT = "abcde"
+const TEST_USER = "dog"
 
 const sut = (
     <MockedProvider addTypename={false}>
-        <CommentSenderPanel user="dog"/>
+        <CommentSenderPanel user={TEST_USER}/>
     </MockedProvider>
 )
 
+it('snapshot test', () => {
+    const component = renderer.create(sut);
+    let tree = component.toJSON()
+    expect(tree).toMatchSnapshot()
+})
+
 describe('CommentSenderPanelテスト', () => {
-    it('snapshot test', () => {
-        const component = renderer.create(sut);
-        let tree = component.toJSON()
-        expect(tree).toMatchSnapshot()
+    let useStateSpy: jest.SpyInstance
+    let setComment : jest.Mock
+
+    const setCommentSpySetup = (initial: string) => {
+        useStateSpy.mockImplementation((): any => [initial, setComment] as any)
+    }
+
+    beforeEach(() => {
+        setComment = jest.fn()
+        useStateSpy = jest.spyOn(React, "useState")
+        setCommentSpySetup("")
     })
-    
-    it('テキストボックスに入力してボタン押すとsetStateされてボックスがクリアされる', () => {
-        const setComment = jest.fn()
-        const useStateSpy = jest.spyOn(React, "useState")
-        useStateSpy.mockImplementation((): any => ["", setComment] as any)
-    
+
+    it('テキストボックスに入力してボタン押すとsetCommentされてボックスがクリアされる', async () => {
         render(sut)
         const textbox = screen.getByRole('textbox')
-    
         expect(textbox).toHaveValue("")
-        fireEvent.change(textbox, { target: { value: "abcde"}})
+        fireEvent.change(textbox, { target: { value: TEST_TEXT}})
         fireEvent.click(screen.getByRole('button'))
-        expect(setComment).toHaveBeenLastCalledWith("abcde")
+        expect(setComment).toHaveBeenLastCalledWith(TEST_TEXT)
         expect(screen.getByRole('textbox')).toHaveValue("")
     })
 
-    it('テキストボックスに入力してEnterキーを押すとsetStateされてボックスがクリアされる', () => {
-        const setComment = jest.fn()
-        const useStateSpy = jest.spyOn(React, "useState")
-        useStateSpy.mockImplementation((): any => ["", setComment] as any)
-    
+    it('テキストボックスに入力してEnterキーを押すとsetCommentされてボックスがクリアされる', () => {
         render(sut)
         const textbox = screen.getByRole('textbox')
-    
         expect(textbox).toHaveValue("")
-        fireEvent.change(textbox, { target: { value: "abcde"}})
+        fireEvent.change(textbox, { target: { value: TEST_TEXT}})
         fireEvent.keyUp(textbox, { target: { key: "Enter" }})
-        expect(setComment).toHaveBeenLastCalledWith("abcde")
+        expect(setComment).toHaveBeenLastCalledWith(TEST_TEXT)
         expect(screen.getByRole('textbox')).toHaveValue("")
+    })
+
+    it('テキストボックスが空でボタンを押すとsetCommentが呼ばれない', () => {
+        render(sut)
+        fireEvent.click(screen.getByRole("button"))
+        expect(setComment).not.toHaveBeenCalled()
+    })
+    
+    it('テキストボックスが空でEnterを押すとsetCommentが呼ばれない', () => {
+        render(sut)
+        fireEvent.keyUp(screen.getByRole('textbox'), { target: { key: "Enter" }})
+        expect(setComment).not.toHaveBeenCalled()
     })
 })
