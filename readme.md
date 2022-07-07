@@ -1,39 +1,31 @@
 # Goでチャット
-(作りかけ)
+![image](https://user-images.githubusercontent.com/73870939/177719442-81d5503f-d93a-4591-8d2a-9873d5bc3443.png)
 
-[gqlgen](https://github.com/99designs/gqlgen)でgraphQLサーバー立てるサンプル
-
-### 起動
+### サーバー起動 
 ```shell
-go run server.go
+go run server.go  # port 8080
 ```
-ブラウザから http://localhost:8080/ (GraphQL playground)
-
-* 購読
-```graphql
-subscription($user: String!) {
-  messagePosted(user: $user) {
-    id
-    user
-    text
-    createdAt
-  }
-}
+### フロント起動
+```shell
+cd front
+yarn build
+yarn start
 ```
-* メッセージPost
-```graphql
-mutation($user: String!, $text: String!) {
-  postMessage(user: $user, text: $text) {
-    id
-    user
-    text
-    createdAt
-  }
-}
-```
+ブラウザで http://localhost:3000 にアクセス
 
+---
 
-### 初回作成時の手順
+### ざっくり仕様
+
+GraphQLのSubscription機能にて、WebSocketのプッシュ型配信のサンプル。
+* [gqlgen](https://github.com/99designs/gqlgen)でGraphQLサーバー立てる。
+* [Gin](https://github.com/gin-gonic/gin)でWeb公開。
+* [NextJS](https://nextjs.org/)でフロント作る。
+* [tailwindcss](https://tailwindcss.jp/)でデザイン。
+
+---
+
+### 初回作成時のメモ
 
 ```shell
 go get github.com/99designs/gqlgen      # インストール
