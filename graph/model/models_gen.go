@@ -16,6 +16,7 @@ type Message struct {
 type SubscriptionResponse struct {
 	Message *Message `json:"message"`
 	User    *User    `json:"user"`
+	Leave   *User    `json:"leave"`
 }
 
 type User struct {

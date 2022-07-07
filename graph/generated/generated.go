@@ -68,6 +68,7 @@ type ComplexityRoot struct {
 	}
 
 	SubscriptionResponse struct {
+		Leave   func(childComplexity int) int
 		Message func(childComplexity int) int
 		User    func(childComplexity int) int
 	}
@@ -168,6 +169,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.Subscribe(childComplexity, args["user"].(string)), true
+
+	case "SubscriptionResponse.leave":
+		if e.complexity.SubscriptionResponse.Leave == nil {
+			break
+		}
+
+		return e.complexity.SubscriptionResponse.Leave(childComplexity), true
 
 	case "SubscriptionResponse.message":
 		if e.complexity.SubscriptionResponse.Message == nil {
@@ -290,6 +298,7 @@ type User {
 type SubscriptionResponse {
   message: Message,
   user: User,
+  leave: User,
 }
 
 type Mutation {
@@ -932,6 +941,8 @@ func (ec *executionContext) fieldContext_Subscription_subscribe(ctx context.Cont
 				return ec.fieldContext_SubscriptionResponse_message(ctx, field)
 			case "user":
 				return ec.fieldContext_SubscriptionResponse_user(ctx, field)
+			case "leave":
+				return ec.fieldContext_SubscriptionResponse_leave(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SubscriptionResponse", field.Name)
 		},
@@ -1030,6 +1041,51 @@ func (ec *executionContext) _SubscriptionResponse_user(ctx context.Context, fiel
 }
 
 func (ec *executionContext) fieldContext_SubscriptionResponse_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SubscriptionResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "user":
+				return ec.fieldContext_User_user(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SubscriptionResponse_leave(ctx context.Context, field graphql.CollectedField, obj *model.SubscriptionResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SubscriptionResponse_leave(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Leave, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgoᚑchatᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SubscriptionResponse_leave(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SubscriptionResponse",
 		Field:      field,
@@ -3084,6 +3140,10 @@ func (ec *executionContext) _SubscriptionResponse(ctx context.Context, sel ast.S
 		case "user":
 
 			out.Values[i] = ec._SubscriptionResponse_user(ctx, field, obj)
+
+		case "leave":
+
+			out.Values[i] = ec._SubscriptionResponse_leave(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

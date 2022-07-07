@@ -1,6 +1,6 @@
 import { atom } from "recoil"
 
-type Member = {
+export type Member = {
     user: string
 }
 

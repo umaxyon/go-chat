@@ -72,6 +72,9 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, user string) (<-ch
 		delete(r.subscribers, user)
 		r.mutex.Unlock()
 		log.Printf("`%s` has been unsubscribed.", user)
+		for _, ch := range r.subscribers {
+			ch <- &model.SubscriptionResponse{Leave: &model.User{User: user}}
+		}
 	}()
 
 	return ch, nil

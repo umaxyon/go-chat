@@ -55,6 +55,9 @@ subscription subscribeMessage($user: String!) {
     user {
         user
     }
+    leave {
+      user
+    }
   }
 }
 `

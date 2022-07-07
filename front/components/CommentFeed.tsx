@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
 import { commentsState, loginState, membersState } from "../state/atoms"
 import { MESSAGE_QUERY, SUBSCRIPTION } from "../utils/client"
+import { Member } from "../state/atoms"
 import CommentPanel from "./CommentPanel"
 
 
@@ -49,6 +50,10 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
                     setMembers(members)
                     setTimeout(scrollEnd, 0)
                     return Object.assign({}, prev, { members })
+                }
+                if (resp.leave) {
+                    const newMembers = prev.members.filter((m: Member) => m.user !== resp.leave.user)
+                    return Object.assign({}, prev, { members: newMembers })
                 }
             }
         })
