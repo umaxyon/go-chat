@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useRef } from "react";
+import { KeyboardEventHandler, useCallback, useEffect, useRef } from "react";
 import { useSetRecoilState } from "recoil";
 import { loginState } from "../state/atoms";
 
@@ -9,20 +9,29 @@ const Login: NextPage = () => {
     const nameInput = useRef<HTMLInputElement>(null)
     const setLogin = useSetRecoilState(loginState)
 
-    const onClickSignIn = () => {
+    useEffect(() => nameInput.current?.focus(), [])
+
+    const onClickSignIn = useCallback(() => {
         const user = nameInput.current!.value
         if (user) {
             setLogin({ user })
             router.replace("/")
         }
-    }
+    }, [router, setLogin])
+
+    const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
+        if (e.key === 'Enter') {
+            await onClickSignIn()
+        }
+    }, [onClickSignIn])
+
 
     return (
         <div className="container mx-auto p-4 h-full flex">
             <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm m-auto">
                 <div className="mb-6">
                     <label htmlFor="inputName" className="inline-block mb-2 text-gray-700">Name</label>
-                    <input type="text" id="inputName" placeholder="Enter name" ref={nameInput}
+                    <input type="text" id="inputName" placeholder="Enter name" ref={nameInput} onKeyUp={onKeyUp}
                         className="block w-full px-3 py-1.5 text-base font-normal
                         text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300
                         rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"

@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client"
-import { ChangeEventHandler, KeyboardEventHandler, useCallback, useState } from "react"
+import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
 import { ADD_COMMENT } from "../utils/client"
 
 type CommentSenderPanelProps = {
@@ -7,8 +7,11 @@ type CommentSenderPanelProps = {
 }
 
 const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
+    const txtInput = useRef<HTMLInputElement>(null)
     const [ addComment, { error } ] = useMutation(ADD_COMMENT)
     const [ comment, setComment ] = useState<string>("")
+
+    useEffect(() => txtInput.current?.focus())
 
     const onChangeComment: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         setComment(e.target.value)
@@ -31,7 +34,7 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
         <>
         { error ? <span>{error.message}</span>: null }
         <div className="flex justify-center gap-2">
-            <input type="text" placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment}
+            <input type="text" placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
             className="
                 block w-full text-base font-normal text-gray-700 bg-white bg-clip-padding
                 border border-solid border-gray-300 rounded py-1.5 px-3 transition ease-in-out m-0
