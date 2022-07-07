@@ -1,8 +1,7 @@
 # Goでチャット
-<style>
-img[src*='#center'] { display:block; margin: auto; }
-</style>
+<div style="text-align: center;">
 ![image](https://user-images.githubusercontent.com/73870939/177719442-81d5503f-d93a-4591-8d2a-9873d5bc3443.png#center)
+</div>
 
 ### サーバー起動 
 ```shell
