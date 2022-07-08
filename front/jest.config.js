@@ -8,8 +8,8 @@ const customJestConfig = {
     // jest.setup.jsを作成する場合のみ定義。
     // setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
     moduleNameMapper: {
-      "^@/components/(.*)$": "<rootDir>/components/$1",
-      "^@/pages/(.*)$": "<rootDir>/pages/$1",
+      "^@/components/(.*)$": "<rootDir>/src/components/$1",
+      "^@/pages/(.*)$": "<rootDir>/src/pages/$1",
     },
     testEnvironment: "jest-environment-jsdom",
   };
