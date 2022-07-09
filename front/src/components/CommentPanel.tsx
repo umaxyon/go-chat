@@ -1,12 +1,7 @@
 import React from 'react'
+import { formatYMDHms } from 'src/utils/utils'
 import { Comment } from '../state/atoms'
 
-const pad = (n:number) => ('00' + n).slice(-2)
-
-const formatYMDHms = (date: Date) => {
-    
-    return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
 
 type CommentPanelProps = {
     comment: Comment

@@ -27,7 +27,3 @@ describe('MembersPanelテスト', () => {
         expect(tree).toMatchSnapshot()
     })
 })
-
-
-
-
