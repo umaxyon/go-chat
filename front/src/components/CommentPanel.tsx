@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatYMDHms } from 'src/utils'
+import { formatYMDHms } from '../utils'
 import { Comment } from '../state/atoms'
 
 
