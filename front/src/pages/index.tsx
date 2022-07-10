@@ -46,8 +46,8 @@ const Home: NextPage = () => {
               </div>
             </div>
             <div className="flex flex-col gap-2 w-full h-full my-auto">
-              <CommentFeed user={login.user} />
-              <CommentSenderPanel user={login.user} />
+              <CommentFeed />
+              <CommentSenderPanel />
             </div>
           </div>
         </main>

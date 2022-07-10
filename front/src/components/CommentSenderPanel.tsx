@@ -1,15 +1,17 @@
 import { useMutation } from "@apollo/client"
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
+import { useRecoilValue } from "recoil"
+import { loginState } from "../state/atoms"
 import { ADD_COMMENT } from "../utils/client"
 
 type CommentSenderPanelProps = {
-    user: string
 }
 
-const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
+const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     const txtInput = useRef<HTMLInputElement>(null)
     const [ addComment, { error } ] = useMutation(ADD_COMMENT)
     const [ comment, setComment ] = useState<string>("")
+    const login = useRecoilValue(loginState)
 
     useEffect(() => txtInput.current?.focus())
 
@@ -19,10 +21,10 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = ({ user }) => {
 
     const onClickSubmit = useCallback(async () => {
         if (comment) {
-            await addComment({ variables: { user, text: comment }})
+            await addComment({ variables: { user: login.user, text: comment }})
             setComment("")
         }
-    }, [comment, user, addComment])
+    }, [comment, login, addComment])
 
     const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {

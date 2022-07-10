@@ -7,10 +7,9 @@ import CommentPanel from "./CommentPanel"
 
 
 type CommentFeedProps = {
-    user: string
 }
 
-const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
+const CommentFeed: React.FC<CommentFeedProps> = () => {
     const [ comments, setComments ] = useRecoilState(commentsState)
     const [ login, setLogin ] = useRecoilState(loginState)
     const setMembers = useSetRecoilState(membersState)
@@ -34,7 +33,7 @@ const CommentFeed: React.FC<CommentFeedProps> = ({ user }) => {
     useEffect(()=> {
         const disconnect = result.subscribeToMore({
             document: SUBSCRIPTION,
-            variables: { user },
+            variables: { user: login.user },
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
                 const resp = subscriptionData.data.subscribe;

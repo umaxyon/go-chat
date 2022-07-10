@@ -2,11 +2,9 @@ import CommentPanel from "@/components/CommentPanel"
 import "@testing-library/jest-dom/extend-expect";
 import { cleanup } from '@testing-library/react';
 import renderer from "react-test-renderer"
-import { Comment } from "src/state/atoms";
+import { Comment } from "../../state/atoms";
 
 afterEach(() => cleanup())
-
-jest.mock("recoil");
 
 const TEST_COMMENT: Comment = {
     id:   "1",
