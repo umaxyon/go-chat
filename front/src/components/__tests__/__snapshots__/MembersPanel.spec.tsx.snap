@@ -2,7 +2,7 @@
 
 exports[`MembersPanelテスト snapshot test 1`] = `
 <div
-  className="w-full h-full p-1"
+  className="w-full h-full p-1 overflow-y-scroll overflow-x-hidden scrollDiv"
 >
   <div
     className="text-sm"
