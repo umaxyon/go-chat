@@ -1,75 +1,35 @@
-import { useQuery } from "@apollo/client"
-import { useCallback, useEffect, useRef } from "react"
-import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, loginState, membersState, Member } from "../state/atoms"
-import { MESSAGE_QUERY, SUBSCRIPTION } from "../utils/client"
+import { useCallback, useRef } from "react"
+import { useRecoilValue } from "recoil"
+import { commentsState } from "../state/atoms"
 import CommentPanel from "./CommentPanel"
+import InitLoad from "./InitLoad"
 
 
 type CommentFeedProps = {
 }
 
 const CommentFeed: React.FC<CommentFeedProps> = () => {
-    const [ comments, setComments ] = useRecoilState(commentsState)
-    const [ login, setLogin ] = useRecoilState(loginState)
-    const setMembers = useSetRecoilState(membersState)
+    const comments = useRecoilValue(commentsState)
     const scrollBottomRef = useRef<HTMLDivElement>(null);
-    const result = useQuery(MESSAGE_QUERY)
 
     const scrollEnd = useCallback(() => {
         scrollBottomRef!.current!.scrollIntoView({ block: 'end' })
     }, [scrollBottomRef])
-
-    useEffect(() => {
-        if (result && result.data) {
-            setComments(result.data.messages)
-            if (result.data.members.length > 0) {
-                setMembers(result.data.members)
-            }
-            scrollEnd()
-        }
-    }, [result, setComments, setMembers, scrollEnd])
-
-    useEffect(()=> {
-        const disconnect = result.subscribeToMore({
-            document: SUBSCRIPTION,
-            variables: { user: login.user },
-            updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) return prev;
-                const resp = subscriptionData.data.subscribe;
-                if (resp.message) {
-                    const messages = prev.messages ? [...prev.messages, resp.message] : [resp.message]
-                    setComments(messages)
-                    return Object.assign({}, prev, { messages })
-                }
-                if (resp.user) {
-                    const members = prev.members ? [resp.user, ...prev.members] : [resp.user]
-                    if (!members.some(m => m.user === login.user)) members.push(login)
-                    setMembers(members)
-                    setTimeout(scrollEnd, 0)
-                    return Object.assign({}, prev, { members })
-                }
-                if (resp.leave) {
-                    const newMembers = prev.members.filter((m: Member) => m.user !== resp.leave.user)
-                    return Object.assign({}, prev, { members: newMembers })
-                }
-            }
-        })
-        setLogin({ ...login, disconnect })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
 
     const feed = !comments ? <></> : comments.map(c => {
         return <CommentPanel key={c.id} comment={c} />
     })
 
     return (
+        <>
+        <InitLoad afterAddMember={() => setTimeout(scrollEnd, 0) } />
         <div className="
             border border-gray-300 min-w-3/4 h-full rounded-tr p-1
             overflow-y-scroll overflow-x-hidden scrollDiv">
             <div className="flex flex-col justify-end gap-1">{feed}</div>
             <div ref={scrollBottomRef} />
         </div>
+        </>
     )
 }
 export default CommentFeed

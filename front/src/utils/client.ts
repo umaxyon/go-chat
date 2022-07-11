@@ -30,8 +30,8 @@ mutation($user: String!, $text: String!) {
 }
 `
 
-export const MESSAGE_QUERY = gql`
-query GetMessages {
+export const INIT_LOAD_QUERY = gql`
+query GetResponse {
   messages {
     id
     user

@@ -1,5 +1,5 @@
 import { ApolloProvider } from '@apollo/client'
-import type { NextPage } from 'next'
+import { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useRecoilValue, useResetRecoilState } from 'recoil'
