@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CommentPanelテスト(addMember) snapshot test 1`] = `
+<div
+  className="w-full pt-2 text-xs"
+>
+  <div
+    className="flex flex-row w-full justify-between pb-1"
+  >
+    <div>
+      test_user
+      が入室しました
+    </div>
+    <div
+      className="text-slate-400"
+    >
+      2022/07/09 22:04
+    </div>
+  </div>
+</div>
+`;

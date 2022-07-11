@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CommentPanelテスト snapshot test 1`] = `
+exports[`CommentPanelテスト(comment) snapshot test 1`] = `
 <div
   className="w-full pt-2 text-xs"
 >

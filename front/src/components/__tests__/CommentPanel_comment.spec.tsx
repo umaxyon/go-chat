@@ -1,6 +1,6 @@
 import CommentPanel from "@/components/CommentPanel"
 import "@testing-library/jest-dom/extend-expect";
-import { cleanup } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import renderer from "react-test-renderer"
 import { FeedRow } from "../../state/atoms";
 
@@ -16,10 +16,15 @@ const TEST_COMMENT: FeedRow = {
 
 const sut = (<CommentPanel comment={TEST_COMMENT}/>)
 
-describe('CommentPanelテスト', () => {
+describe('CommentPanelテスト(comment)', () => {
     it('snapshot test', () => {
         const component = renderer.create(sut);
         let tree = component.toJSON()
         expect(tree).toMatchSnapshot()
+    })
+
+    it('commentタイプの場合はtextが表示されること', () => {
+        render(sut)
+        expect(screen.getByText(`${TEST_COMMENT.text}`)).toBeInTheDocument()
     })
 })
