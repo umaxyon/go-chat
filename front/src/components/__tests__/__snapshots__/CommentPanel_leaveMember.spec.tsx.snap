@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CommentPanelテスト(addMember) snapshot test 1`] = `
+exports[`CommentPanelテスト(leaveMember) snapshot test 1`] = `
 <div
   className="w-full pt-2 text-xs"
 >
@@ -10,7 +10,7 @@ exports[`CommentPanelテスト(addMember) snapshot test 1`] = `
     <div>
       test_user
       が
-      入室
+      退室
       しました
     </div>
     <div

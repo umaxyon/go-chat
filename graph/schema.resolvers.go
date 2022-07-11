@@ -80,12 +80,24 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, user string) (<-ch
 
 	go func() {
 		<-ctx.Done()
+
+		message := &model.Message{
+			ID:          ksuid.New().String(),
+			User:        user,
+			CreatedAt:   time.Now(),
+			MessageType: "leaveMember",
+		}
+
 		r.mutex.Lock()
 		delete(r.subscribers, user)
+		r.messages = append(r.messages, message)
 		r.mutex.Unlock()
 		log.Printf("`%s` has been unsubscribed.", user)
 		for _, ch := range r.subscribers {
-			ch <- &model.SubscriptionResponse{Leave: &model.User{User: user}}
+			ch <- &model.SubscriptionResponse{
+				Leave:   &model.User{User: user},
+				Message: message,
+			}
 		}
 	}()
 

@@ -10,9 +10,22 @@ type CommentPanelProps = {
 const CommentPanel: React.FC<CommentPanelProps> = ({ comment }) => {
     const createdAt = formatYMDHms(new Date(comment.createdAt))
     let component = <></>
-    switch(comment.MessageType) {
-        case "comment":
-            component = (
+    if (["addMember", "leaveMember"].includes(comment.MessageType)) {
+        const inout = comment.MessageType === "addMember" ? "入室" : "退室"
+        component = (
+            <div className="w-full pt-2 text-xs">
+                <div className="flex flex-row w-full justify-between pb-1">
+                    <div>
+                        {comment.user}が{inout}しました
+                    </div>
+                    <div className="text-slate-400">
+                        {createdAt}
+                    </div>
+                </div>
+            </div>
+        )
+    } else if (comment.MessageType === "comment") {
+        component = (
             <div className="w-full pt-2 text-xs">
                 <div className="flex flex-row w-full justify-between pb-1">
                     <div className="inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-gray-200 text-gray-700 rounded-full">
@@ -26,21 +39,7 @@ const CommentPanel: React.FC<CommentPanelProps> = ({ comment }) => {
                     {comment.text}
                 </div>
             </div>
-        ); break
-        case "addMember":
-            component = (
-            <div className="w-full pt-2 text-xs">
-                <div className="flex flex-row w-full justify-between pb-1">
-                    <div>
-                        {comment.user}が入室しました
-                    </div>
-                    <div className="text-slate-400">
-                        {createdAt}
-                    </div>
-                </div>
-            </div>
-        ); break
-        default : component = <></>
+        )
     }
 
     return component
