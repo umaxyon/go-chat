@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client"
 import { useEffect } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, loginState, Member, membersState } from "src/state/atoms"
+import { commentsState, loginState, Member, membersState } from "../state/atoms"
 import { INIT_LOAD_QUERY, SUBSCRIPTION } from "../utils/client"
 
 type InitLoadProps = {
