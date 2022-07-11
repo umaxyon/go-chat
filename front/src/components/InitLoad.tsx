@@ -9,14 +9,16 @@ type InitLoadProps = {
 }
 
 const InitLoad: React.FC<InitLoadProps> = ({ afterAddMember }) => {
-    const result = useQuery(INIT_LOAD_QUERY)
+    const result = useQuery(INIT_LOAD_QUERY, { fetchPolicy: "cache-and-network"})
     const setComments = useSetRecoilState(commentsState)
     const setMembers = useSetRecoilState(membersState)
     const [ login, setLogin ] = useRecoilState(loginState)
 
     useEffect(() => {
         if (result && result.data) {
-            setComments(result.data.messages)
+            if (result.data.messages.length > 0) {
+                setComments(result.data.messages)
+            }
             if (result.data.members.length > 0) {
                 setMembers(result.data.members)
             }
@@ -31,23 +33,28 @@ const InitLoad: React.FC<InitLoadProps> = ({ afterAddMember }) => {
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
                 const resp = subscriptionData.data.subscribe;
-                let retOb = {};
+                let retOb = Object.assign({}, prev);
+                let messages = prev.messages ? [...prev.messages]: []
+                let members  = prev.members ?  [...prev.members] : []
+
                 if (resp.message) {
-                    const messages = prev.messages ? [...prev.messages, resp.message] : [resp.message]
-                    setComments(messages)
-                    retOb = Object.assign({}, prev, { messages })
+                    messages.push(resp.message)
+                    retOb = Object.assign(retOb, { messages })
                 }
+
                 if (resp.user) {
-                    const members = prev.members ? [resp.user, ...prev.members] : [resp.user]
+                    members = [resp.user, ...members]
                     if (!members.some(m => m.user === login.user)) members.push(login)
                     setMembers(members)
-                    afterAddMember()
-                    retOb = Object.assign({}, prev, { members }) 
+                    retOb = Object.assign(retOb, { members })
                 }
+
                 if (resp.leave) {
-                    const newMembers = prev.members.filter((m: Member) => m.user !== resp.leave.user)
-                    retOb = Object.assign({}, prev, { members: newMembers })
+                    members = members.filter((m: Member) => m.user !== resp.leave.user)
+                    retOb = Object.assign(retOb, { members })
                 }
+
+                setComments(messages)
                 return retOb
             }
         })

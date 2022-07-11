@@ -17,10 +17,11 @@ import (
 
 func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
 	message := &model.Message{
-		ID:        ksuid.New().String(),
-		CreatedAt: time.Now(),
-		User:      user,
-		Text:      text,
+		ID:          ksuid.New().String(),
+		MessageType: "comment",
+		CreatedAt:   time.Now(),
+		User:        user,
+		Text:        text,
 	}
 
 	r.mutex.Lock()
@@ -62,8 +63,19 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, user string) (<-ch
 	r.subscribers[user] = ch
 	log.Printf("`%s` has been subscribed!", user)
 
+	message := &model.Message{
+		ID:          ksuid.New().String(),
+		User:        user,
+		CreatedAt:   time.Now(),
+		MessageType: "addMember",
+	}
+
+	r.messages = append(r.messages, message)
 	for _, ch := range r.subscribers {
-		ch <- &model.SubscriptionResponse{User: &model.User{User: user}}
+		ch <- &model.SubscriptionResponse{
+			User:    &model.User{User: user},
+			Message: message,
+		}
 	}
 
 	go func() {

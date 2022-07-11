@@ -1,10 +1,18 @@
 scalar Time
 
+enum MessageType {
+  comment
+  addMember
+  leaveMember
+  system
+}
+
 type Message {
-  id: String!
-  user: String!
-  createdAt: Time!
-  text: String!
+  id         : String!
+  MessageType: MessageType!
+  user       : String!
+  createdAt  : Time!
+  text       : String!
 }
 
 type User {

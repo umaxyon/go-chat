@@ -3,14 +3,18 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
 type Message struct {
-	ID        string    `json:"id"`
-	User      string    `json:"user"`
-	CreatedAt time.Time `json:"createdAt"`
-	Text      string    `json:"text"`
+	ID          string      `json:"id"`
+	MessageType MessageType `json:"MessageType"`
+	User        string      `json:"user"`
+	CreatedAt   time.Time   `json:"createdAt"`
+	Text        string      `json:"text"`
 }
 
 type SubscriptionResponse struct {
@@ -21,4 +25,49 @@ type SubscriptionResponse struct {
 
 type User struct {
 	User string `json:"user"`
+}
+
+type MessageType string
+
+const (
+	MessageTypeComment     MessageType = "comment"
+	MessageTypeAddMember   MessageType = "addMember"
+	MessageTypeLeaveMember MessageType = "leaveMember"
+	MessageTypeSystem      MessageType = "system"
+)
+
+var AllMessageType = []MessageType{
+	MessageTypeComment,
+	MessageTypeAddMember,
+	MessageTypeLeaveMember,
+	MessageTypeSystem,
+}
+
+func (e MessageType) IsValid() bool {
+	switch e {
+	case MessageTypeComment, MessageTypeAddMember, MessageTypeLeaveMember, MessageTypeSystem:
+		return true
+	}
+	return false
+}
+
+func (e MessageType) String() string {
+	return string(e)
+}
+
+func (e *MessageType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MessageType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MessageType", str)
+	}
+	return nil
+}
+
+func (e MessageType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

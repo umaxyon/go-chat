@@ -23,6 +23,7 @@ export const ADD_COMMENT = gql`
 mutation($user: String!, $text: String!) {
   postMessage(user: $user, text: $text) {
     id
+    MessageType
     user
     text
     createdAt
@@ -34,6 +35,7 @@ export const INIT_LOAD_QUERY = gql`
 query GetResponse {
   messages {
     id
+    MessageType
     user
     text
     createdAt
@@ -48,6 +50,7 @@ subscription subscribeMessage($user: String!) {
   subscribe(user: $user) {
     message {
         id
+        MessageType
         user
         text
         createdAt

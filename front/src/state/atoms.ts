@@ -4,8 +4,9 @@ export type Member = {
     user: string
 }
 
-export type Comment = {
+export type FeedRow = {
     id: string,
+    MessageType: "comment" | "addMember" | "leaveMember" | "system",
     user: string,
     text: string,
     createdAt: any
@@ -21,7 +22,7 @@ export const membersState = atom<Member[]>({
     default: [],
 })
 
-export const commentsState = atom<Comment[]>({
+export const commentsState = atom<FeedRow[]>({
     key: "comments",
     default: [],
 })
