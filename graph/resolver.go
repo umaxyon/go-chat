@@ -15,6 +15,11 @@ type Resolver struct {
 	mutex       sync.Mutex
 }
 
+func (r *Resolver) IsSubscribe(user string) bool {
+	_, ok := r.subscribers[user]
+	return ok
+}
+
 func NewResolver() *Resolver {
 	return &Resolver{
 		subscribers: map[string]chan<- *model.SubscriptionResponse{},

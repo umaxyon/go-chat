@@ -16,10 +16,16 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
+type ErrorType = string
 
-func graphqlHandler() gin.HandlerFunc {
-	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver()}))
+const (
+	defaultPort      = "8080"
+	UserNameTooLong  = ErrorType("user_name_too_long")
+	UserAlreadyExist = ErrorType("user_already_exist")
+)
+
+func graphqlHandler(resolver *graph.Resolver) gin.HandlerFunc {
+	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 	srv.AddTransport(&transport.Websocket{
 		Upgrader: websocket.Upgrader{
 			CheckOrigin:     func(r *http.Request) bool { return true },
@@ -46,6 +52,24 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
+type LoginResponse struct {
+	Token string    `json:"token"`
+	Error ErrorType `json:"error"`
+}
+
+func loginHandler(resolver *graph.Resolver) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := c.PostForm("user")
+		if len(user) > 5 {
+			c.JSON(400, &LoginResponse{Error: UserNameTooLong})
+		} else if resolver.IsSubscribe(user) {
+			c.JSON(400, &LoginResponse{Error: UserAlreadyExist})
+		} else {
+			c.JSON(200, &LoginResponse{Token: "ok"})
+		}
+	}
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -64,8 +88,11 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
+	resolver := graph.NewResolver()
+
 	router.GET("/", playgroundHandler())
-	router.Any("/query", graphqlHandler())
+	router.POST("/login", loginHandler(resolver))
+	router.Any("/query", graphqlHandler(resolver))
 
 	router.Run(":" + port)
 }
