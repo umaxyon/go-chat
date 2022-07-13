@@ -15,7 +15,14 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
+func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string, token string) (*model.Message, error) {
+	loginToken, ok := r.loginTokens[user]
+	if !ok || loginToken != token {
+		err := fmt.Errorf("`%s` is not login", user)
+		log.Print(err.Error())
+		return nil, err
+	}
+
 	message := &model.Message{
 		ID:          ksuid.New().String(),
 		MessageType: "comment",
@@ -89,7 +96,7 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, user string) (<-ch
 		}
 
 		r.mutex.Lock()
-		delete(r.subscribers, user)
+		r.RemoveUser(user)
 		r.messages = append(r.messages, message)
 		r.mutex.Unlock()
 		log.Printf("`%s` has been unsubscribed.", user)

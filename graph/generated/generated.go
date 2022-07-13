@@ -56,7 +56,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		PostMessage func(childComplexity int, user string, text string) int
+		PostMessage func(childComplexity int, user string, text string, token string) int
 	}
 
 	Query struct {
@@ -80,7 +80,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	PostMessage(ctx context.Context, user string, text string) (*model.Message, error)
+	PostMessage(ctx context.Context, user string, text string, token string) (*model.Message, error)
 }
 type QueryResolver interface {
 	Messages(ctx context.Context) ([]*model.Message, error)
@@ -150,7 +150,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PostMessage(childComplexity, args["user"].(string), args["text"].(string)), true
+		return e.complexity.Mutation.PostMessage(childComplexity, args["user"].(string), args["text"].(string), args["token"].(string)), true
 
 	case "Query.members":
 		if e.complexity.Query.Members == nil {
@@ -318,7 +318,7 @@ type SubscriptionResponse {
 }
 
 type Mutation {
-  postMessage(user: String!, text: String!): Message!
+  postMessage(user: String!, text: String!, token: String!): Message!
 }
 
 type Query {
@@ -357,6 +357,15 @@ func (ec *executionContext) field_Mutation_postMessage_args(ctx context.Context,
 		}
 	}
 	args["text"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -662,7 +671,7 @@ func (ec *executionContext) _Mutation_postMessage(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["user"].(string), fc.Args["text"].(string))
+		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["user"].(string), fc.Args["text"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

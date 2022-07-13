@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/segmentio/ksuid"
 	"go-chat/graph"
 	"go-chat/graph/generated"
 	"net/http"
@@ -72,7 +73,9 @@ func loginHandler(resolver *graph.Resolver) gin.HandlerFunc {
 		} else if resolver.IsSubscribe(req.User) {
 			c.JSON(http.StatusBadRequest, &LoginResponse{Error: UserAlreadyExist})
 		} else {
-			c.JSON(http.StatusOK, &LoginResponse{Token: "ok"})
+			token := ksuid.New().String()
+			resolver.SaveToken(req.User, token)
+			c.JSON(http.StatusOK, &LoginResponse{Token: token})
 		}
 	}
 }
