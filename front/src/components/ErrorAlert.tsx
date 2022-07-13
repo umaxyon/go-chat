@@ -13,6 +13,6 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ errKey }) => {
                 </svg>
                 {MessageResources.get(errKey)}
             </div>
-        ): <div className="h-12"></div>
+        ): <div className="h-12" data-testid="non-error"></div>
 }
 export default ErrorAlert
