@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"unicode/utf8"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -52,6 +53,10 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
+type LoginRequest struct {
+	User string `json:"user"`
+}
+
 type LoginResponse struct {
 	Token string    `json:"token"`
 	Error ErrorType `json:"error"`
@@ -59,13 +64,15 @@ type LoginResponse struct {
 
 func loginHandler(resolver *graph.Resolver) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := c.PostForm("user")
-		if len(user) > 5 {
-			c.JSON(400, &LoginResponse{Error: UserNameTooLong})
-		} else if resolver.IsSubscribe(user) {
-			c.JSON(400, &LoginResponse{Error: UserAlreadyExist})
+		var req LoginRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else if utf8.RuneCountInString(req.User) > 5 {
+			c.JSON(http.StatusBadRequest, &LoginResponse{Error: UserNameTooLong})
+		} else if resolver.IsSubscribe(req.User) {
+			c.JSON(http.StatusBadRequest, &LoginResponse{Error: UserAlreadyExist})
 		} else {
-			c.JSON(200, &LoginResponse{Token: "ok"})
+			c.JSON(http.StatusOK, &LoginResponse{Token: "ok"})
 		}
 	}
 }
