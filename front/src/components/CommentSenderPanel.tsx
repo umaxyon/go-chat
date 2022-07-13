@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client"
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
 import { useRecoilValue } from "recoil"
-import { useLogout } from "src/hooks/logout"
+import { useLogout } from "../hooks/logout"
 import { loginState } from "../state/atoms"
 import { ADD_COMMENT } from "../utils/client"
 

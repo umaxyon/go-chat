@@ -15,8 +15,9 @@ const setRecoilMock = (val: LoginData) => {
 
 jest.mock("recoil");
 
-const TEST_TEXT = "abcde"
-const TEST_USER = "dog"
+const TEST_TEXT  = "abcde"
+const TEST_USER  = "dog"
+const TEST_TOKEN = "dummy"
 
 const sut = (
     <MockedProvider addTypename={false}>
@@ -42,7 +43,7 @@ describe('CommentSenderPanelテスト', () => {
         setComment = jest.fn()
         useStateSpy = jest.spyOn(React, "useState")
         setCommentSpySetup("")
-        setRecoilMock({ user: TEST_USER })
+        setRecoilMock({ user: TEST_USER, token: TEST_TOKEN })
     })
 
     it('テキストボックスに入力してボタン押すとsetCommentされてボックスがクリアされる', async () => {

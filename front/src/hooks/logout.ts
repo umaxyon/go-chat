@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import { useRecoilValue, useResetRecoilState } from "recoil"
-import { loginState } from "src/state/atoms"
+import { loginState } from "../state/atoms"
 
 export const useLogout = () => {
     const router = useRouter()
