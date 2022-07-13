@@ -11,6 +11,7 @@ import (
 	"log"
 	"sort"
 	"time"
+	"unicode/utf8"
 
 	"github.com/segmentio/ksuid"
 )
@@ -21,6 +22,15 @@ func (r *mutationResolver) PostMessage(ctx context.Context, user string, text st
 		err := fmt.Errorf("`%s` is not login", user)
 		log.Print(err.Error())
 		return nil, err
+	}
+
+	if utf8.RuneCountInString(text) > 200 {
+		return &model.Message{
+			ID:          "",
+			MessageType: "error",
+			Text:        "text_size_over",
+			CreatedAt:   time.Now(),
+		}, nil
 	}
 
 	message := &model.Message{

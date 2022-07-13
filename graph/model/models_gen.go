@@ -34,6 +34,7 @@ const (
 	MessageTypeAddMember   MessageType = "addMember"
 	MessageTypeLeaveMember MessageType = "leaveMember"
 	MessageTypeSystem      MessageType = "system"
+	MessageTypeError       MessageType = "error"
 )
 
 var AllMessageType = []MessageType{
