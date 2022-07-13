@@ -6,7 +6,7 @@ export type Member = {
 
 export type FeedRow = {
     id: string,
-    MessageType: "comment" | "addMember" | "leaveMember" | "system",
+    MessageType: "comment" | "addMember" | "leaveMember" | "system" | "error",
     user: string,
     text: string,
     createdAt: any
@@ -31,4 +31,9 @@ export const commentsState = atom<FeedRow[]>({
 export const loginState = atom<LoginData>({
     key: "loginUser",
     default: undefined,
+})
+
+export const bottomInfoState = atom<string>({
+    key: "bottomInfo",
+    default: "",
 })

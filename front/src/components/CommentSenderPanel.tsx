@@ -1,8 +1,9 @@
 import { useMutation } from "@apollo/client"
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
-import { useRecoilValue } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
+import { MessageResources } from "../resources"
 import { useLogout } from "../hooks/logout"
-import { loginState } from "../state/atoms"
+import { bottomInfoState, FeedRow, loginState } from "../state/atoms"
 import { ADD_COMMENT } from "../utils/client"
 
 type CommentSenderPanelProps = {
@@ -10,10 +11,11 @@ type CommentSenderPanelProps = {
 
 const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     const txtInput = useRef<HTMLInputElement>(null)
-    const [ addComment, { error } ] = useMutation(ADD_COMMENT)
+    const [ addComment ] = useMutation(ADD_COMMENT)
     const [ comment, setComment ] = useState<string>("")
     const login = useRecoilValue(loginState)
     const logout = useLogout()
+    const setErr = useSetRecoilState(bottomInfoState)
 
     useEffect(() => txtInput.current?.focus())
 
@@ -23,14 +25,19 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
 
     const onClickSubmit = useCallback(async () => {
         if (comment) {
-            try {
-                await addComment({ variables: { ...login, text: comment }})
-                setComment("")
-            } catch {
+            const ret: any = await addComment({ variables: { ...login, text: comment }}).catch((e) => {
+                console.log(e)
                 logout()
+            })
+            const resp: FeedRow = ret.data.postMessage
+            if (resp.MessageType === "error") {
+                setErr(MessageResources.get(resp.text, "200"))
+            } else {
+                setComment("")
+                setErr("")
             }
         }
-    }, [comment, login, addComment, logout])
+    }, [comment, login, addComment, logout, setErr])
 
     const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {
@@ -40,7 +47,6 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
 
     return (
         <>
-        { error ? <span>{error.message}</span>: null }
         <div className="flex justify-center gap-2">
             <input type="text" placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
             className="
