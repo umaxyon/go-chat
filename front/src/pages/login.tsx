@@ -22,7 +22,7 @@ const Login: NextPage = () => {
 
         axios.post("http://localhost:8080/login", { user })
             .then((resp) => {
-                setLogin({ user })
+                setLogin({ user, token: resp.data.token })
                 router.replace("/")
             })
             .catch((reason) => {

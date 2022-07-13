@@ -20,8 +20,8 @@ const splitLink = split(({ query }) => {
 export const client = new ApolloClient({ link: splitLink, cache: new InMemoryCache() })
 
 export const ADD_COMMENT = gql`
-mutation($user: String!, $text: String!) {
-  postMessage(user: $user, text: $text) {
+mutation($user: String!, $text: String!, $token: String!) {
+  postMessage(user: $user, text: $text, token: $token) {
     id
     MessageType
     user

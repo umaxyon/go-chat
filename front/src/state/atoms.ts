@@ -14,6 +14,7 @@ export type FeedRow = {
 
 export type LoginData = {
     user: string,
+    token: string,
     disconnect?: () => void
 }
 
