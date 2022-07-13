@@ -1,25 +1,18 @@
 import { ApolloProvider } from '@apollo/client'
 import { NextPage } from 'next'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 import { client } from '../utils/client'
 import Auth from '@/components/Auth'
 import CommentFeed from '@/components/CommentFeed'
 import CommentSenderPanel from '@/components/CommentSenderPanel'
 import MembersPanel from '@/components/MembersPanel'
 import { loginState } from '../state/atoms'
+import { useLogout } from '../hooks/logout'
 
 const Home: NextPage = () => {
-  const router = useRouter()
   const login = useRecoilValue(loginState)
-  const logout = useResetRecoilState(loginState)
-
-  const onClickLogout = () => {
-    logout()
-    if (login.disconnect) login.disconnect()
-    router.reload()
-  }
+  const logout = useLogout()
 
   return (
     <ApolloProvider client={client}>
@@ -38,7 +31,7 @@ const Home: NextPage = () => {
               <MembersPanel />
               <div className="flex align-middle flex-col w-full bg-yellow-100 pb-3 border-t border-gray-300">
                 <p className="p-2"><b>{login.user}</b><br/><small>で参加中</small></p>
-                <button type="button" onClick={onClickLogout}
+                <button type="button" onClick={logout}
                   className="
                     inline-block px-6 py-2.5 bg-yellow-500 text-white font-medium text-xs leading-tight uppercase
                     rounded shadow-md hover:bg-yellow-600 hover:shadow-lg focus:bg-yellow-600 focus:shadow-lg focus:outline-none 
