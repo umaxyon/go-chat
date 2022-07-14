@@ -35,18 +35,11 @@ it('snapshot test', () => {
     expect(tree).toMatchSnapshot()
 })
 
-describe('CommentSenderPanelテスト', () => {
-    // let useStateSpy: jest.SpyInstance
+describe('CommentSenderPanelテスト', () => {    
     let setComment : jest.Mock
-
-    // const setCommentSpySetup = (initial: string) => {
-    //     useStateSpy.mockImplementation((): any => [initial, setComment] as any)
-    // }
 
     beforeEach(() => {
         setComment = jest.fn()
-        // useStateSpy = jest.spyOn(React, "useState")
-        // setCommentSpySetup("")
         setRecoilValueMock({ user: TEST_USER, token: TEST_TOKEN })
         setRecoilStateMock([ "", setComment ])
     })
