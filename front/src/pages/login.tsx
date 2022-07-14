@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { useSetRecoilState } from "recoil";
+import { SERVICE_URL_BASE } from "../resources";
 import { loginState } from "../state/atoms";
 
 const Login: NextPage = () => {
@@ -20,7 +21,7 @@ const Login: NextPage = () => {
         const user = nameInput.current!.value
         if (!user) return
 
-        axios.post("http://localhost:8080/login", { user })
+        axios.post(`${SERVICE_URL_BASE}/login`, { user })
             .then((resp) => {
                 setLogin({ user, token: resp.data.token })
                 router.replace("/")

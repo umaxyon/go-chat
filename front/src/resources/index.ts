@@ -1,3 +1,6 @@
+export const SERVICE_URL_BASE = `${process.env.NEXT_PUBLIC_SERVICE_URL_PROTOCOL}://${process.env.NEXT_PUBLIC_SERVICE_URL_DOMAIN}`
+export const SERVICE_WEB_SOCKET = `ws://${process.env.NEXT_PUBLIC_SERVICE_URL_DOMAIN}`
+
 export class MessageResources {
 
     private static resouces: { [ k:string ]: string } = {

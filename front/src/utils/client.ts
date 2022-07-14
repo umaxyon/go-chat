@@ -3,13 +3,14 @@ import { split, HttpLink, ApolloClient, InMemoryCache, gql } from '@apollo/clien
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
+import { SERVICE_URL_BASE, SERVICE_WEB_SOCKET } from '../resources';
 
 const httpLink = new HttpLink({
-    uri: 'http://localhost:8080/query', fetch
+    uri: `${SERVICE_URL_BASE}/query`, fetch
 })
 
 const wsLink = typeof window !== "undefined" ? new GraphQLWsLink(createClient({
-    url: 'ws://localhost:8080/query',
+    url: `${SERVICE_WEB_SOCKET}/query`,
 })) : httpLink;
 
 const splitLink = split(({ query }) => {
