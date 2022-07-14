@@ -30,6 +30,10 @@ func (r *Resolver) IsSubscribe(user string) bool {
 	return ok
 }
 
+func (r *Resolver) CountMember() int {
+	return len(r.subscribers)
+}
+
 func NewResolver() *Resolver {
 	return &Resolver{
 		subscribers: map[string]chan<- *model.SubscriptionResponse{},

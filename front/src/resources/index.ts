@@ -1,9 +1,10 @@
 export class MessageResources {
 
     private static resouces: { [ k:string ]: string } = {
-        "user_name_too_long" : "ユーザー名は5文字までです",
-        "user_already_exist" : "そのユーザー名はすでに使われています。別の名前でログインしてください",
-        "text_size_over"     : "%s文字までしか入力できません"
+        "over_member_capacity": "定員オーバーです。",
+        "user_name_too_long"  : "ユーザー名は5文字までです",
+        "user_already_exist"  : "そのユーザー名はすでに使われています。別の名前でログインしてください",
+        "text_size_over"      : "%s文字までしか入力できません"
     }
 
     static get(key: string, ...val: string[]) {

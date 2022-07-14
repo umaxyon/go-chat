@@ -21,9 +21,10 @@ import (
 type ErrorType = string
 
 const (
-	defaultPort      = "8080"
-	UserNameTooLong  = ErrorType("user_name_too_long")
-	UserAlreadyExist = ErrorType("user_already_exist")
+	defaultPort        = "8080"
+	OverMemberCapacity = ErrorType("over_member_capacity")
+	UserNameTooLong    = ErrorType("user_name_too_long")
+	UserAlreadyExist   = ErrorType("user_already_exist")
 )
 
 func graphqlHandler(resolver *graph.Resolver) gin.HandlerFunc {
@@ -68,6 +69,8 @@ func loginHandler(resolver *graph.Resolver) gin.HandlerFunc {
 		var req LoginRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else if resolver.CountMember() >= 15 {
+			c.JSON(http.StatusBadRequest, &LoginResponse{Error: OverMemberCapacity})
 		} else if utf8.RuneCountInString(req.User) > 5 {
 			c.JSON(http.StatusBadRequest, &LoginResponse{Error: UserNameTooLong})
 		} else if resolver.IsSubscribe(req.User) {
