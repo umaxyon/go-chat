@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client"
 import { useEffect } from "react"
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { commentsState, loginState, Member, membersState } from "../state/atoms"
+import { feedsState, loginState, Member, membersState } from "../state/atoms"
 import { INIT_LOAD_QUERY, SUBSCRIPTION } from "../utils/client"
 
 type InitLoadProps = {
@@ -10,21 +10,21 @@ type InitLoadProps = {
 
 const InitLoad: React.FC<InitLoadProps> = ({ afterAddMember }) => {
     const result = useQuery(INIT_LOAD_QUERY, { fetchPolicy: "cache-and-network"})
-    const setComments = useSetRecoilState(commentsState)
+    const setFeeds = useSetRecoilState(feedsState)
     const setMembers = useSetRecoilState(membersState)
     const [ login, setLogin ] = useRecoilState(loginState)
 
     useEffect(() => {
         if (result && result.data) {
             if (result.data.messages.length > 0) {
-                setComments(result.data.messages)
+                setFeeds(result.data.messages)
             }
             if (result.data.members.length > 0) {
                 setMembers(result.data.members)
             }
             afterAddMember()
         }
-    }, [result, setComments, setMembers, afterAddMember])
+    }, [result, setFeeds, setMembers, afterAddMember])
 
     useEffect(()=> {
         const disconnect = result.subscribeToMore({
@@ -54,7 +54,7 @@ const InitLoad: React.FC<InitLoadProps> = ({ afterAddMember }) => {
                     retOb = Object.assign(retOb, { members })
                 }
 
-                setComments(messages)
+                setFeeds(messages)
                 return retOb
             }
         })

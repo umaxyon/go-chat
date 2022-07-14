@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react"
 import { useRecoilValue } from "recoil"
-import { commentsState } from "../state/atoms"
+import { feedsState } from "../state/atoms"
 import CommentPanel from "./CommentPanel"
 import InitLoad from "./InitLoad"
 
@@ -9,15 +9,15 @@ type CommentFeedProps = {
 }
 
 const CommentFeed: React.FC<CommentFeedProps> = () => {
-    const comments = useRecoilValue(commentsState)
+    const feeds = useRecoilValue(feedsState)
     const scrollBottomRef = useRef<HTMLDivElement>(null);
 
     const scrollEnd = useCallback(() => {
         scrollBottomRef!.current!.scrollIntoView({ block: 'end' })
     }, [scrollBottomRef])
 
-    const feed = !comments ? <></> : comments.map(c => {
-        return <CommentPanel key={c.id} comment={c} />
+    const feed = !feeds ? <></> : feeds.map(c => {
+        return <CommentPanel key={c.id} feed={c} />
     })
 
     return (

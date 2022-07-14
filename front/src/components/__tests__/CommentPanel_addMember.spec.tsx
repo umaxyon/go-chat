@@ -14,7 +14,7 @@ const TEST_COMMENT: FeedRow = {
     createdAt: "2022-07-09T22:04:00.2890199+09:00"
 }
 
-const sut = (<CommentPanel comment={TEST_COMMENT}/>)
+const sut = (<CommentPanel feed={TEST_COMMENT}/>)
 
 describe('CommentPanelテスト(addMember)', () => {
     it('snapshot test', () => {

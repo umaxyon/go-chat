@@ -23,9 +23,14 @@ export const membersState = atom<Member[]>({
     default: [],
 })
 
-export const commentsState = atom<FeedRow[]>({
-    key: "comments",
+export const feedsState = atom<FeedRow[]>({
+    key: "feeds",
     default: [],
+})
+
+export const inputCommentState = atom<string>({
+    key: "inputComment",
+    default: "",
 })
 
 export const loginState = atom<LoginData>({

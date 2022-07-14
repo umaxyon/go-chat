@@ -1,43 +1,27 @@
-import { useMutation } from "@apollo/client"
-import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
-import { useRecoilValue, useSetRecoilState } from "recoil"
-import { MessageResources } from "../resources"
-import { useLogout } from "../hooks/logout"
-import { bottomInfoState, FeedRow, loginState } from "../state/atoms"
-import { ADD_COMMENT } from "../utils/client"
+import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useRef } from "react"
+import { useRecoilState } from "recoil"
+import { inputCommentState } from "../state/atoms"
+import { useSendComment } from "../hooks/comment"
 
 type CommentSenderPanelProps = {
 }
 
 const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     const txtInput = useRef<HTMLInputElement>(null)
-    const [ addComment ] = useMutation(ADD_COMMENT)
-    const [ comment, setComment ] = useState<string>("")
-    const login = useRecoilValue(loginState)
-    const logout = useLogout()
-    const setErr = useSetRecoilState(bottomInfoState)
+    const [ comment, setComment ] = useRecoilState(inputCommentState)
+    const sendComment = useSendComment()
 
     useEffect(() => txtInput.current?.focus())
 
     const onChangeComment: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
         setComment(e.target.value)
-    }, [])
+    }, [setComment])
 
     const onClickSubmit = useCallback(async () => {
         if (comment) {
-            const ret: any = await addComment({ variables: { ...login, text: comment }}).catch((e) => {
-                console.log(e)
-                logout()
-            })
-            const resp: FeedRow = ret.data.postMessage
-            if (resp.MessageType === "error") {
-                setErr(MessageResources.get(resp.text, "200"))
-            } else {
-                setComment("")
-                setErr("")
-            }
+            await sendComment()
         }
-    }, [comment, login, addComment, logout, setErr])
+    }, [comment, sendComment])
 
     const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {
