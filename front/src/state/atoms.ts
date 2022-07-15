@@ -1,4 +1,4 @@
-import { atom } from "recoil"
+import { atom, selector } from "recoil"
 
 export type Member = {
     user: string
@@ -15,6 +15,7 @@ export type FeedRow = {
 export type LoginData = {
     user: string,
     token: string,
+    lastConnect: number,
     disconnect?: () => void
 }
 
@@ -41,4 +42,16 @@ export const loginState = atom<LoginData>({
 export const bottomInfoState = atom<string>({
     key: "bottomInfo",
     default: "",
+})
+
+export const connectIntervalSelector = selector({
+    key: "connectInterval",
+    get: ({ get }) => {
+        const dat = get(loginState)
+        return dat.lastConnect
+    },
+    set: ({ get, set }, newVal) => {
+        const dat = get(loginState)
+        set(loginState, { ...dat, lastConnect: newVal as number })
+    }
 })
