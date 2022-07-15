@@ -40,7 +40,7 @@ describe('CommentSenderPanelテスト', () => {
 
     beforeEach(() => {
         setComment = jest.fn()
-        setRecoilValueMock({ user: TEST_USER, token: TEST_TOKEN })
+        setRecoilValueMock({ user: TEST_USER, token: TEST_TOKEN, lastConnect: 0 })
         setRecoilStateMock([ "", setComment ])
     })
 

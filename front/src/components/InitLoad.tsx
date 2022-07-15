@@ -37,6 +37,10 @@ const InitLoad: React.FC<InitLoadProps> = ({ afterAddMember }) => {
                 let messages = prev.messages ? [...prev.messages]: []
                 let members  = prev.members ?  [...prev.members] : []
 
+                if (resp.connectKeep) {
+                    return retOb
+                }
+
                 if (resp.message) {
                     messages.push(resp.message)
                     retOb = Object.assign(retOb, { messages })

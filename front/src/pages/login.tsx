@@ -23,7 +23,7 @@ const Login: NextPage = () => {
 
         axios.post(`${SERVICE_URL_BASE}/login`, { user })
             .then((resp) => {
-                setLogin({ user, token: resp.data.token })
+                setLogin({ user, token: resp.data.token, lastConnect: new Date().getTime() })
                 router.replace("/")
             })
             .catch((reason) => {

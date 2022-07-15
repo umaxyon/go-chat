@@ -9,6 +9,7 @@ import CommentSenderPanel from '@/components/CommentSenderPanel'
 import MembersPanel from '@/components/MembersPanel'
 import { bottomInfoState, loginState } from '../state/atoms'
 import { useLogout } from '../hooks/logout'
+import KeepAlive from '@/components/KeepAlive'
 
 const Home: NextPage = () => {
   const login = useRecoilValue(loginState)
@@ -48,6 +49,7 @@ const Home: NextPage = () => {
             <div className="h-15 text-center pt-2 text-red-400">{bottomInfo}</div>
           </div>
         </main>
+        <KeepAlive />
       </div>
     )}
     </Auth>

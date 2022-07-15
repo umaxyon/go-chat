@@ -31,6 +31,11 @@ mutation($user: String!, $text: String!, $token: String!) {
   }
 }
 `
+export const CONNECTION_KEEP = gql`
+mutation ConnectionKeep($user: String!, $token: String!) {
+  keepAlive(user: $user, token: $token)
+}
+`
 
 export const INIT_LOAD_QUERY = gql`
 query GetResponse {
@@ -62,6 +67,7 @@ subscription subscribeMessage($user: String!) {
     leave {
       user
     }
+    connectKeep
   }
 }
 `
