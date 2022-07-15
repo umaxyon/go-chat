@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-type KeepAliveResponse struct {
-	Ok bool `json:"ok"`
-}
-
 type Message struct {
 	ID          string      `json:"id"`
 	MessageType MessageType `json:"MessageType"`
@@ -22,9 +18,10 @@ type Message struct {
 }
 
 type SubscriptionResponse struct {
-	Message *Message `json:"message"`
-	User    *User    `json:"user"`
-	Leave   *User    `json:"leave"`
+	Message     *Message `json:"message"`
+	User        *User    `json:"user"`
+	Leave       *User    `json:"leave"`
+	ConnectKeep *bool    `json:"connectKeep"`
 }
 
 type User struct {

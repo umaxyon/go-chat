@@ -47,10 +47,6 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	KeepAliveResponse struct {
-		Ok func(childComplexity int) int
-	}
-
 	Message struct {
 		CreatedAt   func(childComplexity int) int
 		ID          func(childComplexity int) int
@@ -60,7 +56,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		KeepAlive   func(childComplexity int) int
+		KeepAlive   func(childComplexity int, user string, token string) int
 		PostMessage func(childComplexity int, user string, text string, token string) int
 	}
 
@@ -74,9 +70,10 @@ type ComplexityRoot struct {
 	}
 
 	SubscriptionResponse struct {
-		Leave   func(childComplexity int) int
-		Message func(childComplexity int) int
-		User    func(childComplexity int) int
+		ConnectKeep func(childComplexity int) int
+		Leave       func(childComplexity int) int
+		Message     func(childComplexity int) int
+		User        func(childComplexity int) int
 	}
 
 	User struct {
@@ -86,7 +83,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	PostMessage(ctx context.Context, user string, text string, token string) (*model.Message, error)
-	KeepAlive(ctx context.Context) (bool, error)
+	KeepAlive(ctx context.Context, user string, token string) (bool, error)
 }
 type QueryResolver interface {
 	Messages(ctx context.Context) ([]*model.Message, error)
@@ -110,13 +107,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
-
-	case "KeepAliveResponse.ok":
-		if e.complexity.KeepAliveResponse.Ok == nil {
-			break
-		}
-
-		return e.complexity.KeepAliveResponse.Ok(childComplexity), true
 
 	case "Message.createdAt":
 		if e.complexity.Message.CreatedAt == nil {
@@ -158,7 +148,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Mutation.KeepAlive(childComplexity), true
+		args, err := ec.field_Mutation_keepAlive_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.KeepAlive(childComplexity, args["user"].(string), args["token"].(string)), true
 
 	case "Mutation.postMessage":
 		if e.complexity.Mutation.PostMessage == nil {
@@ -197,6 +192,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.Subscribe(childComplexity, args["user"].(string)), true
+
+	case "SubscriptionResponse.connectKeep":
+		if e.complexity.SubscriptionResponse.ConnectKeep == nil {
+			break
+		}
+
+		return e.complexity.SubscriptionResponse.ConnectKeep(childComplexity), true
 
 	case "SubscriptionResponse.leave":
 		if e.complexity.SubscriptionResponse.Leave == nil {
@@ -335,15 +337,12 @@ type SubscriptionResponse {
   message: Message,
   user: User,
   leave: User,
-}
-
-type KeepAliveResponse {
-  ok: Boolean!
+  connectKeep: Boolean,
 }
 
 type Mutation {
   postMessage(user: String!, text: String!, token: String!): Message!
-  keepAlive: Boolean!
+  keepAlive(user: String!, token: String!): Boolean!
 }
 
 type Query {
@@ -360,6 +359,30 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_keepAlive_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["user"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["user"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_postMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -461,50 +484,6 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
-
-func (ec *executionContext) _KeepAliveResponse_ok(ctx context.Context, field graphql.CollectedField, obj *model.KeepAliveResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_KeepAliveResponse_ok(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Ok, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_KeepAliveResponse_ok(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "KeepAliveResponse",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
 
 func (ec *executionContext) _Message_id(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Message_id(ctx, field)
@@ -807,7 +786,7 @@ func (ec *executionContext) _Mutation_keepAlive(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().KeepAlive(rctx)
+		return ec.resolvers.Mutation().KeepAlive(rctx, fc.Args["user"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -833,6 +812,17 @@ func (ec *executionContext) fieldContext_Mutation_keepAlive(ctx context.Context,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_keepAlive_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -1129,6 +1119,8 @@ func (ec *executionContext) fieldContext_Subscription_subscribe(ctx context.Cont
 				return ec.fieldContext_SubscriptionResponse_user(ctx, field)
 			case "leave":
 				return ec.fieldContext_SubscriptionResponse_leave(ctx, field)
+			case "connectKeep":
+				return ec.fieldContext_SubscriptionResponse_connectKeep(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SubscriptionResponse", field.Name)
 		},
@@ -1285,6 +1277,47 @@ func (ec *executionContext) fieldContext_SubscriptionResponse_leave(ctx context.
 				return ec.fieldContext_User_user(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SubscriptionResponse_connectKeep(ctx context.Context, field graphql.CollectedField, obj *model.SubscriptionResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SubscriptionResponse_connectKeep(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConnectKeep, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SubscriptionResponse_connectKeep(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SubscriptionResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3115,34 +3148,6 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** object.gotpl ****************************
 
-var keepAliveResponseImplementors = []string{"KeepAliveResponse"}
-
-func (ec *executionContext) _KeepAliveResponse(ctx context.Context, sel ast.SelectionSet, obj *model.KeepAliveResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, keepAliveResponseImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("KeepAliveResponse")
-		case "ok":
-
-			out.Values[i] = ec._KeepAliveResponse_ok(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var messageImplementors = []string{"Message"}
 
 func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *model.Message) graphql.Marshaler {
@@ -3376,6 +3381,10 @@ func (ec *executionContext) _SubscriptionResponse(ctx context.Context, sel ast.S
 		case "leave":
 
 			out.Values[i] = ec._SubscriptionResponse_leave(ctx, field, obj)
+
+		case "connectKeep":
+
+			out.Values[i] = ec._SubscriptionResponse_connectKeep(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

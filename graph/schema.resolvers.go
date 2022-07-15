@@ -51,7 +51,9 @@ func (r *mutationResolver) PostMessage(ctx context.Context, user string, text st
 	return message, nil
 }
 
-func (r *mutationResolver) KeepAlive(ctx context.Context) (bool, error) {
+func (r *mutationResolver) KeepAlive(ctx context.Context, user string, token string) (bool, error) {
+	ch := r.subscribers[user]
+	ch <- &model.SubscriptionResponse{ConnectKeep: &[]bool{true}[0]}
 	return true, nil
 }
 
