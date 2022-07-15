@@ -51,6 +51,10 @@ func (r *mutationResolver) PostMessage(ctx context.Context, user string, text st
 	return message, nil
 }
 
+func (r *mutationResolver) KeepAlive(ctx context.Context) (bool, error) {
+	return true, nil
+}
+
 func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
 	sort.SliceStable(r.messages, func(i, j int) bool {
 		return r.messages[i].CreatedAt.Unix() < r.messages[j].CreatedAt.Unix()

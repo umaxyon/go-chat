@@ -25,8 +25,13 @@ type SubscriptionResponse {
   leave: User,
 }
 
+type KeepAliveResponse {
+  ok: Boolean!
+}
+
 type Mutation {
   postMessage(user: String!, text: String!, token: String!): Message!
+  keepAlive: Boolean!
 }
 
 type Query {
