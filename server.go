@@ -6,9 +6,11 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	"github.com/segmentio/ksuid"
 	"go-chat/graph"
 	"go-chat/graph/generated"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -84,6 +86,12 @@ func loginHandler(resolver *graph.Resolver) gin.HandlerFunc {
 }
 
 func main() {
+	err := godotenv.Load(".env.server")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
@@ -94,7 +102,7 @@ func main() {
 		AllowMethods: []string{"GET", "POST", "OPTIONS", "PUT"},
 		AllowHeaders: []string{"Origin", "Content-Type"},
 		AllowOrigins: []string{
-			"http://localhost:3000/",
+			os.Getenv("FRONT_URL"),
 		},
 		AllowOriginFunc: func(origin string) bool { return true },
 	}))
