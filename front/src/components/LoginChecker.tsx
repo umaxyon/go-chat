@@ -4,11 +4,11 @@ import { useRecoilValue } from "recoil";
 import { loginState } from "../state/atoms";
 
 
-type AuthProps = {
+type LoginCheckerProps = {
     children: React.ReactNode
 }
 
-const Auth: React.FC<AuthProps> = ({ children }) => {
+const LoginChecker: React.FC<LoginCheckerProps> = ({ children }) => {
     const router = useRouter()
     const user = useRecoilValue(loginState)
 
@@ -24,4 +24,4 @@ const Auth: React.FC<AuthProps> = ({ children }) => {
     return <>{children}</>
 }
 
-export default Auth;
+export default LoginChecker;

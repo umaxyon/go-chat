@@ -3,7 +3,7 @@ import { NextPage } from 'next'
 import Head from 'next/head'
 import { useRecoilValue } from 'recoil'
 import { client } from '../utils/client'
-import Auth from '@/components/Auth'
+import LoginChecker from '@/components/LoginChecker'
 import CommentFeed from '@/components/CommentFeed'
 import CommentSenderPanel from '@/components/CommentSenderPanel'
 import MembersPanel from '@/components/MembersPanel'
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
 
   return (
     <ApolloProvider client={client}>
-    <Auth>
+    <LoginChecker>
       {!login ? <></> : (
       <div className="w-full h-full">
         <Head>
@@ -52,7 +52,7 @@ const Home: NextPage = () => {
         <KeepAlive />
       </div>
     )}
-    </Auth>
+    </LoginChecker>
     </ApolloProvider>
   )
 }
