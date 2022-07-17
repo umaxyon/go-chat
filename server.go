@@ -102,7 +102,8 @@ func main() {
 		AllowMethods: []string{"GET", "POST", "OPTIONS", "PUT"},
 		AllowHeaders: []string{"Origin", "Content-Type"},
 		AllowOrigins: []string{
-			os.Getenv("FRONT_URL"),
+			os.Getenv("FRONT_LOCAL_URL"),
+			os.Getenv("FRONT_PRODUCTION_URL"),
 		},
 		AllowOriginFunc: func(origin string) bool { return true },
 	}))
