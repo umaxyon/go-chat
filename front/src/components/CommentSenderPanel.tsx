@@ -7,13 +7,13 @@ type CommentSenderPanelProps = {
 }
 
 const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
-    const txtInput = useRef<HTMLInputElement>(null)
+    const txtInput = useRef<HTMLTextAreaElement>(null)
     const [ comment, setComment ] = useRecoilState(inputCommentState)
     const sendComment = useSendComment()
 
     useEffect(() => txtInput.current?.focus())
 
-    const onChangeComment: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
+    const onChangeComment: ChangeEventHandler<HTMLTextAreaElement> = useCallback((e) => {
         setComment(e.target.value)
     }, [setComment])
 
@@ -23,7 +23,7 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
         }
     }, [comment, sendComment])
 
-    const onKeyUp: KeyboardEventHandler<HTMLInputElement> = useCallback(async (e) => {
+    const onKeyUp: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(async (e) => {
         if (e.key === 'Enter') {
             await onClickSubmit()
         }
@@ -32,11 +32,11 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     return (
         <>
         <div className="flex justify-center gap-2">
-            <input type="text" placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
+            <textarea placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
             className="
                 block w-full text-base font-normal text-gray-700 bg-white bg-clip-padding
                 border border-solid border-gray-300 rounded py-1.5 px-3 transition ease-in-out m-0
-                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" />
+                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"></textarea>
             <button type="button" onClick={onClickSubmit}
             className="
                 inline-block px-6 py-2.5 bg-blue-400 text-white font-medium text-xs leading-tight uppercase whitespace-nowrap
