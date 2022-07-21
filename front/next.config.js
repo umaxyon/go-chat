@@ -7,6 +7,7 @@ const cacheHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  productionBrowserSourceMaps: true,
   async headers() { return [
     { source: '/', headers: cacheHeaders }
   ] },
