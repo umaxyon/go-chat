@@ -36,7 +36,7 @@ const CommentPanel: React.FC<CommentPanelProps> = ({ feed }) => {
                     </div>
                 </div>
                 <div className="ml-7 p-2 bg-green-200 text-sm balloon rounded-lg">
-                    {feed.text}
+                    {feed.text.split(/(\n)/g).map(t => (t === '\n'?<br />: t))}
                 </div>
             </div>
         )

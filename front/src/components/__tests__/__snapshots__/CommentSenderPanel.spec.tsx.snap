@@ -4,12 +4,11 @@ exports[`snapshot test 1`] = `
 <div
   className="flex justify-center gap-2"
 >
-  <input
+  <textarea
     className=" block w-full text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded py-1.5 px-3 transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
     onChange={[Function]}
     onKeyUp={[Function]}
-    placeholder="入力してください"
-    type="text"
+    placeholder="入力してください (ctrl + enter 送信)"
     value=""
   />
   <button

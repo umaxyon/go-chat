@@ -24,7 +24,7 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     }, [comment, sendComment])
 
     const onKeyUp: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(async (e) => {
-        if (e.key === 'Enter') {
+        if (e.ctrlKey && e.key === 'Enter') {
             await onClickSubmit()
         }
     }, [onClickSubmit])
@@ -32,7 +32,7 @@ const CommentSenderPanel: React.FC<CommentSenderPanelProps> = () => {
     return (
         <>
         <div className="flex justify-center gap-2">
-            <textarea placeholder='入力してください' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
+            <textarea placeholder='入力してください  (ctrl + enter 送信)' onChange={onChangeComment} onKeyUp={onKeyUp} value={comment} ref={txtInput}
             className="
                 block w-full text-base font-normal text-gray-700 bg-white bg-clip-padding
                 border border-solid border-gray-300 rounded py-1.5 px-3 transition ease-in-out m-0
